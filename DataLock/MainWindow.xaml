@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="DataLock.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DataLock"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <NavigationView x:Name="AppNav"
+        IsSettingsVisible="True"
+        IsBackButtonVisible="Collapsed"
+        IsBackEnabled="True"
+        SelectionChanged="AppNav_SelectionChanged"
+        Header="Sample Page 1"
+        AlwaysShowHeader="True"
+        PaneTitle=""
+        PaneDisplayMode="Left"
+        ExpandedModeThresholdWidth="500"
+        SelectionFollowsFocus="Disabled"
+        IsTabStop="False">
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Home" Tag="Home" x:Name="HomePageNav">
+                <NavigationViewItem.Icon>
+                    <SymbolIcon Symbol="Home" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItemHeader Content="Cryptography"/>
+            <NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xF439;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Encrypt" Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE72E;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Decrypt" Tag="Decrypt" x:Name="DecryptNav" SelectsOnInvoked="True">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE785;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="contentFrame">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition></NavigationThemeTransition>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
+    </NavigationView>
+</Window>

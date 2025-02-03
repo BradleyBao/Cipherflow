@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DataLock (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DataLock (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
