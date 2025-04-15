@@ -65,7 +65,7 @@ namespace DataLock
 
                     case "DynamicsLock":
                         contentFrame.Navigate(typeof(DynamicsLockPage), null, effect);
-                        AppNav.Header = "Dynamic Lock"; // TODO Will add translated text
+                        AppNav.Header = "Registered Files / Folders"; // TODO Will add translated text
                         break;
 
                     case "Encrypt":

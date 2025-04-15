@@ -39,7 +39,7 @@ namespace DataLock.Modules
 
         internal static string DetermineFileType(string path)
         {
-            if (File.Exists(path))
+            if (System.IO.File.Exists(path))
             {
                 return "File";
 

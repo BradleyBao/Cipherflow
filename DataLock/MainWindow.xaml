@@ -8,6 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
     <NavigationView x:Name="AppNav"
         IsSettingsVisible="True"
         IsBackButtonVisible="Collapsed"
@@ -37,6 +42,9 @@
                 <NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE72E;" />
                 </NavigationViewItem.Icon>
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY"/>
+                </NavigationViewItem.MenuItems>
             </NavigationViewItem>
             <NavigationViewItem Content="Decrypt" Tag="Decrypt" x:Name="DecryptNav" SelectsOnInvoked="True">
                 <NavigationViewItem.Icon>
