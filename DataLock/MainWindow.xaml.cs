@@ -32,6 +32,15 @@ namespace DataLock
         public MainWindow()
         {
             this.InitializeComponent();
+            this.SetupTitleBar();
+        }
+
+        private void SetupTitleBar()
+        {
+            // C# code to set AppTitleBar uielement as titlebar
+            ExtendsContentIntoTitleBar = true;  // enable custom titlebar
+            AppTitle.Text = "DataLock"; // set title text
+            SetTitleBar(AppTitleBar);      // set user ui element as titlebar
         }
 
         private void AppNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -60,27 +69,27 @@ namespace DataLock
                 {
                     case "Home":
                         contentFrame.Navigate(typeof(HomePage), null, effect);
-                        AppNav.Header = "Home"; // TODO Will add translated text
+                        //AppNav.Header = "Home"; // TODO Will add translated text
                         break;
 
                     case "DynamicsLock":
                         contentFrame.Navigate(typeof(DynamicsLockPage), null, effect);
-                        AppNav.Header = "Registered Files / Folders"; // TODO Will add translated text
+                        //AppNav.Header = "Registered Files / Folders"; // TODO Will add translated text
                         break;
 
                     case "Encrypt":
                         contentFrame.Navigate(typeof(EncryptPage), null, effect);
-                        AppNav.Header = "Encrypt"; // TODO Will add translated text
+                        //AppNav.Header = "Encrypt"; // TODO Will add translated text
                         break;
 
                     case "Decrypt":
                         contentFrame.Navigate(typeof(DecryptPage), null, effect);
-                        AppNav.Header = "Decrypt"; // TODO Will add translated text
+                        //AppNav.Header = "Decrypt"; // TODO Will add translated text
                         break;
 
                     case "Settings":
                         contentFrame.Navigate(typeof(SettingPage), null, effect);
-                        AppNav.Header = "Setting"; // TODO Will add translated text
+                        //AppNav.Header = "Setting"; // TODO Will add translated text
                         break;
 
                     default:

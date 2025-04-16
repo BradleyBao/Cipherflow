@@ -13,52 +13,84 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <NavigationView x:Name="AppNav"
-        IsSettingsVisible="True"
-        IsBackButtonVisible="Collapsed"
-        IsBackEnabled="True"
-        SelectionChanged="AppNav_SelectionChanged"
-        Header="Sample Page 1"
-        AlwaysShowHeader="True"
-        PaneTitle=""
-        PaneDisplayMode="Left"
-        ExpandedModeThresholdWidth="500"
-        SelectionFollowsFocus="Disabled"
-        IsTabStop="False">
 
-        <NavigationView.MenuItems>
-            <NavigationViewItem Content="Home" Tag="Home" x:Name="HomePageNav">
-                <NavigationViewItem.Icon>
-                    <SymbolIcon Symbol="Home" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItemHeader Content="Cryptography"/>
-            <NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xF439;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Content="Encrypt" Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE72E;" />
-                </NavigationViewItem.Icon>
-                <NavigationViewItem.MenuItems>
-                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY"/>
-                </NavigationViewItem.MenuItems>
-            </NavigationViewItem>
-            <NavigationViewItem Content="Decrypt" Tag="Decrypt" x:Name="DecryptNav" SelectsOnInvoked="True">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE785;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-        </NavigationView.MenuItems>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <Frame x:Name="contentFrame">
-            <Frame.ContentTransitions>
-                <TransitionCollection>
-                    <NavigationThemeTransition></NavigationThemeTransition>
-                </TransitionCollection>
-            </Frame.ContentTransitions>
-        </Frame>
-    </NavigationView>
+        <Grid x:Name="AppTitleBar" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Source="Assets/DataLock.scale-200.png" 
+               Width="16" 
+               Height="16" 
+               VerticalAlignment="Center"
+               Margin="15,0,0,0"/>  
+            <TextBlock x:Name="AppTitle"
+               VerticalAlignment="Center" 
+               Margin="15,15,0,15"
+               FontSize="12"
+                       Style="{StaticResource BodyTextBlockStyle}"
+               Grid.Column="1"
+               />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <NavigationView x:Name="AppNav"
+                            IsSettingsVisible="True"
+                            IsBackButtonVisible="Collapsed"
+                            IsBackEnabled="True"
+                            SelectionChanged="AppNav_SelectionChanged"
+                            AlwaysShowHeader="True"
+                            PaneTitle=""
+                            PaneDisplayMode="Left"
+                            ExpandedModeThresholdWidth="500"
+                            SelectionFollowsFocus="Disabled"
+                            IsTabStop="False">      
+
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Content="Home" Tag="Home" x:Name="HomePageNav">
+                        <NavigationViewItem.Icon>
+                            <SymbolIcon Symbol="Home" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItemHeader Content="Cryptography"/>
+                    <NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xF439;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Content="Encrypt" Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE72E;" />
+                        </NavigationViewItem.Icon>
+                        <NavigationViewItem.MenuItems>
+                            <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY"/>
+                        </NavigationViewItem.MenuItems>
+                    </NavigationViewItem>
+                    <NavigationViewItem Content="Decrypt" Tag="Decrypt" x:Name="DecryptNav" SelectsOnInvoked="True">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE785;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </NavigationView.MenuItems>
+
+                <Frame x:Name="contentFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition></NavigationThemeTransition>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </NavigationView>
+        </Grid>
+
+        
+    </Grid>
+    
+    
 </Window>

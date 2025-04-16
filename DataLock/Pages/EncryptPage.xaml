@@ -11,20 +11,31 @@
     xmlns:local="using:CommunityToolkit.WinUI.Controls"
     Background="{ThemeResource DesktopAcrylicTransparentBrush}">
 
-    <ScrollViewer Margin="35 10">
-        <StackPanel Padding="20" Spacing="16">
-
-            <!-- 信息提示条 -->
+    <ScrollViewer Margin="5 10" >
+        <StackPanel Padding="20" Spacing="16" MaxWidth="1200" HorizontalAlignment="Center" Width="Auto">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Encrypt</TextBlock>
+             <!--信息提示条--> 
             <InfoBar 
             Title="Fonts Control Panel is being redirected here." 
             Message="To access the legacy interface, click this link or navigate to C:\WINDOWS\Fonts in File Explorer." 
             IsOpen="True" 
             Severity="Informational" />
 
-            <!-- 字体拖放区 -->
-            <Border BorderBrush="LightGray" BorderThickness="1" Padding="30" CornerRadius="8" Background="{ThemeResource SolidBackgroundFillColorTransparent}" HorizontalAlignment="Stretch">
+            <!-- Files dragging areas -->
+            <Border x:Name="UploadBanner" 
+                    BorderBrush="Gray" 
+                    BorderThickness="1" 
+                    Padding="30" 
+                    CornerRadius="8" 
+                    Background="{ThemeResource SolidBackgroundFillColorTransparent}" 
+                    HorizontalAlignment="Stretch"
+                    AllowDrop="True"
+                    Drop="UploadBanner_Drop"
+                    DragOver="UploadBanner_DragOver"
+                    DragEnter="UploadBanner_DragEnter"
+                    DragLeave="UploadBanner_DragLeave">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                    <FontIcon Glyph="&#xE710;" FontSize="36" Foreground="Black" />
+                    <FontIcon Glyph="&#xE710;" FontSize="36" />
                     <TextBlock Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
                     <TextBlock Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
                            TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
@@ -62,6 +73,12 @@
                     <ToggleSwitch />
                 </local:SettingsCard>
 
+                <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
+                                    Header="Keep original files"
+                                    HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
+                    <ToggleSwitch IsOn="True" />
+                </local:SettingsCard>
+
                 <local:SettingsCard x:Name="psdSettingCard"
    Description="Set Password for all files"
    Header="Password"
@@ -82,23 +99,24 @@
                 
 
             <!-- 搜索与筛选 -->
-            <Grid>
+            <Grid Margin="0 30 0 0">
                 <Grid.ColumnDefinitions>
+                    <!--<ColumnDefinition Width="Auto" />-->
                     <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox PlaceholderText="Type here to search" Grid.Column="0" />
-                <ComboBox Grid.Column="1" Header="Filter by" SelectedIndex="0">
-                    <ComboBoxItem Content="Scripts for all languages" />
-                    <ComboBoxItem Content="Latin" />
-                    <ComboBoxItem Content="Japanese" />
-                    <!-- 更多语言 -->
-                </ComboBox>
+                <TextBlock>
+                    <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}">
+                        Selected Files: </Run>
+                    <LineBreak/>
+                    <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
+                </TextBlock>
+
+                <Button HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Content="Execute" />
             </Grid>
 
             <ScrollViewer>
-                <ItemsControl ItemsSource="{x:Bind FileList, Mode=OneWay}">
+                <ItemsControl x:Name="EncryptFileDataGrid" ItemsSource="{x:Bind DataList, Mode=OneWay}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
@@ -106,33 +124,39 @@
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="modules:File">
-                            <Border BorderBrush="LightGray" BorderThickness="1"
-                        Background="White"
+                        <DataTemplate x:DataType="modules:DataType">
+                            <Border BorderBrush="Gray" BorderThickness="1"
+                        Background="{ThemeResource CardBackgroundFillColorDefault}"
                         Width="220" Height="160"
                         CornerRadius="8" Margin="8" Padding="12">
                                 <StackPanel Spacing="8">
                                     <!-- 文件名 -->
-                                    <TextBlock Text="{x:Bind FileName}" 
+                                    <TextBlock Text="{x:Bind Name}" 
                                    FontSize="16"
                                    FontWeight="Bold" 
                                    TextTrimming="CharacterEllipsis"/>
-
+                                    <!-- 修改时间 -->
+                                    <TextBlock Text="{x:Bind DataModifiled}"
+                                    FontSize="12" />
                                     <!-- 文件路径 -->
-                                    <TextBlock Text="{x:Bind FilePath}" 
+                                    <TextBlock Text="{x:Bind Path}" 
                                    FontSize="12" 
                                    Foreground="Gray"
                                    TextTrimming="CharacterEllipsis" 
                                    MaxLines="1"/>
 
-                                    <!-- 文件大小 -->
-                                    <TextBlock Text="{x:Bind FileSize, Converter={StaticResource FileSizeConverter}}"
-                                   FontSize="12" />
-
-                                    <!-- 修改时间 -->
-                                    <TextBlock Text="{x:Bind ModifiedDate}"
-                                   FontSize="12" />
+                                    <FontIcon
+                                        Width="38"
+                                        Height="38"
+                                        Margin="6"
+                                        FontSize="35"
+                                        HorizontalAlignment="Right"
+                                        Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                                        Glyph="{x:Bind dataFileIcon}"
+                                        />
                                 </StackPanel>
+
+                                
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
