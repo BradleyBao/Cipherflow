@@ -3,13 +3,211 @@
     x:Class="DataLock.Pages.DecryptPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DataLock.Pages"
+    xmlns:page="using:DataLock.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:local="using:CommunityToolkit.WinUI.Controls" xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    Background="{ThemeResource DesktopAcrylicTransparentBrush}">
 
-    <Grid>
+    <ScrollViewer Margin="5 10" HorizontalAlignment="Stretch">
+        <Grid>
+            <StackPanel Padding="20" Spacing="16" MaxWidth="1300" HorizontalAlignment="Stretch" Width="Auto">
+                <win:StackPanel.ChildrenTransitions>
+                    <TransitionCollection>
+                        <win:EntranceThemeTransition FromVerticalOffset="50" />
+                        <win:RepositionThemeTransition IsStaggeringEnabled="False" />
+                    </TransitionCollection>
+                </win:StackPanel.ChildrenTransitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Decrypt</TextBlock>
+                <!--信息提示条-->
+                <InfoBar 
+                     Title="Fonts Control Panel is being redirected here." 
+                     Message="To access the legacy interface, click this link or navigate to C:\WINDOWS\Fonts in File Explorer." 
+                     IsOpen="True" 
+                     Severity="Informational" />
 
-    </Grid>
+                <!-- Files dragging areas -->
+                <Border x:Name="UploadBanner" 
+                 BorderBrush="Gray" 
+                 BorderThickness="1" 
+                 Padding="30" 
+                 CornerRadius="8" 
+                 Background="{ThemeResource SolidBackgroundFillColorTransparent}" 
+                 HorizontalAlignment="Stretch"
+                 AllowDrop="True"
+                 Drop="UploadBanner_Drop"
+                 DragOver="UploadBanner_DragOver"
+                 DragEnter="UploadBanner_DragEnter"
+                 DragLeave="UploadBanner_DragLeave">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                        <FontIcon Glyph="&#xE710;" FontSize="36" />
+                        <TextBlock Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
+                        TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
+                        <Button HorizontalAlignment="Center" Content="Browse and add files" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Spacing="4">
+                    <local:SettingsExpander x:Name="decryptMethodSettingsCard"
+                                            VerticalAlignment="Top"
+                                            Description="Choose the preferred encription method."
+                                            Header="Decryption Method"
+                                            HorizontalAlignment="Stretch"
+                                            Width="Auto"
+             HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                        <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
+                        <ComboBox SelectedIndex="0" x:Name="SelectDecryptionAlgorithmBox">
+                            <ComboBoxItem>AES-GCM</ComboBoxItem>
+                            <ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
+                            <ComboBoxItem>RSA + AES</ComboBoxItem>
+                        </ComboBox>
+
+                        <local:SettingsExpander.Items>
+                            <local:SettingsCard Description="This is decryption method is...."
+                                         Header="What is "
+                                         IsClickEnabled="True"
+                                         Width="Auto"/>
+
+                            <!--<local:SettingsCard ContentAlignment="Left">
+         <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons." />
+     </local:SettingsCard>-->
+
+                        </local:SettingsExpander.Items>
+                    </local:SettingsExpander>
+                    <local:SettingsExpander x:Name="decryptSavePathSettingsCard"
+                                            VerticalAlignment="Top"
+                                            Description="Save the files into specified directory. "
+                                            Header="Save in target folder"
+                                            HorizontalAlignment="Stretch"
+                                            Width="Auto"
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                        <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
+                        <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" Toggled="isSaveInDifferentPath_Toggled" />
+
+                        <local:SettingsExpander.Items>
+                            <local:SettingsCard Header="Choose Save Path"
+                                                Description="Save Path would display here. "
+                                                IsEnabled="False"
+                                                x:Name="SavePathSettingCard">
+                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" />
+                            </local:SettingsCard>
+
+
+                            <!--<local:SettingsCard ContentAlignment="Left">
+    <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons." />
+</local:SettingsCard>-->
+
+                        </local:SettingsExpander.Items>
+                    </local:SettingsExpander>
+                    <!--<local:SettingsCard Description="This file can only decrypt in this deivce."
+                            Header="This device only"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEC4E;}">
+                        <ToggleSwitch />
+                    </local:SettingsCard>-->
+
+                    <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
+                                 Header="Keep original files"
+                                 HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
+                        <ToggleSwitch IsOn="True" />
+                    </local:SettingsCard>
+
+                    <local:SettingsCard x:Name="psdSettingCard"
+                                        Description="Enter Password for encrypted files"
+                                        Header="Password"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
+
+                        <PasswordBox Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
+
+                    </local:SettingsCard>
+
+                    <!-- 相关设置 -->
+                    <!--<Expander Header="Related settings" IsExpanded="False">
+                 <StackPanel>
+                     <TextBlock Text="Advanced font settings..." />
+                     -->
+                    <!-- 你可以在这里添加更多设置项 -->
+                    <!--
+                 </StackPanel>
+             </Expander>-->
+                </StackPanel>
+
+
+                <!-- 搜索与筛选 -->
+                <Grid Margin="0 30 0 0">
+                    <Grid.ColumnDefinitions>
+                        <!--<ColumnDefinition Width="Auto" />-->
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock>
+                 <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}">
+                     Selected Files: </Run>
+                 <LineBreak/>
+                 <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
+                    </TextBlock>
+
+                    <Button HorizontalAlignment="Right" 
+                            x:Name="DecryptRun"
+                            Style="{StaticResource AccentButtonStyle}" 
+                            Content="Execute"
+                            Click="DecryptRun_Click"/>
+                </Grid>
+
+                <!--Progress Bar-->
+                <ProgressBar x:Name="DecryptProgress" Visibility="Visible" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
+
+                <!--<ScrollViewer>
+                    <ItemsControl x:Name="EncryptFileDataGrid" ItemsSource="{x:Bind DataList, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="modules:DataType">
+                                <Border BorderBrush="Gray" BorderThickness="1"
+                     Background="{ThemeResource CardBackgroundFillColorDefault}"
+                     Width="220" Height="160"
+                     CornerRadius="8" Margin="8" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        --><!-- 文件名 --><!--
+                                        <TextBlock Text="{x:Bind Name}" 
+                                FontSize="16"
+                                FontWeight="Bold" 
+                                TextTrimming="CharacterEllipsis"/>
+                                        --><!-- 修改时间 --><!--
+                                        <TextBlock Text="{x:Bind DataModifiled}"
+                                 FontSize="12" />
+                                        --><!-- 文件路径 --><!--
+                                        <TextBlock Text="{x:Bind Path}" 
+                                FontSize="12" 
+                                Foreground="Gray"
+                                TextTrimming="CharacterEllipsis" 
+                                MaxLines="1"/>
+
+                                        <FontIcon
+                                     Width="38"
+                                     Height="38"
+                                     Margin="6"
+                                     FontSize="35"
+                                     HorizontalAlignment="Right"
+                                     Foreground="{ThemeResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                                     Glyph="{x:Bind dataFileIcon}"
+                                     />
+                                    </StackPanel>
+
+
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>-->
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

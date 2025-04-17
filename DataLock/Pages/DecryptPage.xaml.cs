@@ -27,5 +27,35 @@ namespace DataLock.Pages
         {
             this.InitializeComponent();
         }
+
+        private void DecryptRun_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UploadBanner_Drop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void UploadBanner_DragOver(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void UploadBanner_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void UploadBanner_DragLeave(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void isSaveInDifferentPath_Toggled(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

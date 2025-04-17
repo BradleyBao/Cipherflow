@@ -119,7 +119,7 @@ Description="Set Password for all files"
 Header="Password"
 HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
 
-                        <PasswordBox Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
+                        <PasswordBox x:Name="FilePsdBox" Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
 
                     </local:SettingsCard>
 
@@ -155,6 +155,9 @@ HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
                             Content="Execute"
                             Click="EncryptRun_Click"/>
                 </Grid>
+                
+                <!--Progress Bar-->
+                <ProgressBar x:Name="EncryptProgress" Visibility="Visible" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
 
                 <ScrollViewer>
                     <ItemsControl x:Name="EncryptFileDataGrid" ItemsSource="{x:Bind DataList, Mode=OneWay}">

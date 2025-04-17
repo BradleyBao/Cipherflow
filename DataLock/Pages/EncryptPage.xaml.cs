@@ -142,7 +142,7 @@ namespace DataLock.Pages
         // Display Information
         private async System.Threading.Tasks.Task<ContentDialogResult> ShowDialog(string title, 
             string btn1, 
-            string btn2, 
+            string btn2 = "", 
             string closebtn = "Cancel", 
             ContentDialogButton DefaultButton = ContentDialogButton.Primary, 
             string content = "")
@@ -154,6 +154,10 @@ namespace DataLock.Pages
             dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
             dialog.Title = title;
             dialog.PrimaryButtonText = btn1;
+            if (!btn2.Equals(""))
+            {
+                dialog.SecondaryButtonText = btn2;
+            }
             dialog.SecondaryButtonText = btn2;
             dialog.CloseButtonText = closebtn;
             dialog.DefaultButton = DefaultButton;
@@ -163,12 +167,29 @@ namespace DataLock.Pages
             return result;
         }
 
+        private void LockDown()
+        {
+            EncryptRun.IsEnabled = false;
+        }
+
+        private void UnlockPage()
+        {
+            EncryptRun.IsEnabled = true;
+        }
+
         private async void EncryptRun_Click(object sender, RoutedEventArgs e)
         {
-            // Protect View
-            EncryptRun.IsEnabled = false;
+            // Lock Down UI
+            LockDown();
+
+            string psd = FilePsdBox.Password;
             // Get Encryption Property 
-            int algorithm_index = SelectEncryptionAlgorithmBox.SelectedIndex; 
+            int algorithm_index = SelectEncryptionAlgorithmBox.SelectedIndex;
+            int num_of_files = DataList.Count();
+            //await ShowDialog("Key", "OK", "Alright", content: num_of_files.ToString());
+            int current_progress = 0;
+
+            EncryptProgress.Visibility = Visibility.Visible;
 
             // Encrypt File 
             foreach (var item in DataList)
@@ -182,8 +203,16 @@ namespace DataLock.Pages
                     {
                         case 0:
                             // AES_GCM
-                            byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path);
-                            await ShowDialog("Key", "OK", "Alright", content:BitConverter.ToString(key));
+                            if (psd.Equals(""))
+                            {
+                                byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path);
+                            } else
+                            {
+                                byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path, psd);
+                            }
+                                
+                            //await ShowDialog("Key", "OK", "Alright", content: (current_progress / (float)num_of_files).ToString());
+                            
                             break;
                         default:
                             break;
@@ -193,7 +222,13 @@ namespace DataLock.Pages
                 {
                     // TODO : Handle folder encryption if needed
                 }
+                current_progress++;
+                EncryptProgress.Value = (int)((current_progress / (float)num_of_files) * 100);
             }
+            // Update UI
+            UnlockPage();
+            await ShowDialog("Encryption Complete", "OK", content: num_of_files.ToString() + " files have encrypted.");
+            EncryptProgress.Visibility = Visibility.Collapsed;
         }
     }
 }
