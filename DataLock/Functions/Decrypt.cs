@@ -10,10 +10,10 @@ namespace DataLock.Functions
 {
     public class Decrypt
     {
-        public static bool AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, byte[] key)
+        public static async Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, byte[] key)
         {
             // Read the encrypted file
-            byte[] fileBytes = File.ReadAllBytes(encryptedFilePath);
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
 
             // Number use once 
             byte[] nonce = new byte[12];
@@ -43,8 +43,64 @@ namespace DataLock.Functions
                 return false;
             }
 
-            File.WriteAllBytes(outputFilePath, plaintext);
+            await File.WriteAllBytesAsync(outputFilePath, plaintext);
             return true;
+        }
+
+        public static async Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, string password)
+        {
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
+
+            byte[] salt = new byte[16];
+            byte[] nonce = new byte[12];
+            byte[] tag = new byte[16];
+            byte[] ciphertext = new byte[fileBytes.Length - 16 - 12 - 16];
+
+            Array.Copy(fileBytes, 0, salt, 0, 16);
+            Array.Copy(fileBytes, 16, nonce, 0, 12);
+            Array.Copy(fileBytes, 28, tag, 0, 16);
+            Array.Copy(fileBytes, 44, ciphertext, 0, ciphertext.Length);
+
+            byte[] key = DeriveKeyFromPassword(password, salt);
+            byte[] plaintext = new byte[ciphertext.Length];
+
+            try
+            {
+                using (var aes = new AesGcm(key))
+                {
+                    aes.Decrypt(nonce, ciphertext, tag, plaintext);
+                }
+
+                await File.WriteAllBytesAsync(outputFilePath, plaintext);
+                Console.WriteLine("✅ 文件解密成功！");
+                return true;
+            }
+            catch (CryptographicException)
+            {
+                Console.WriteLine("❌ 解密失败！密码错误或文件已损坏。");
+                return false;
+            }
+        }
+
+        public static async Task DecryptFilesInParallelAsync(IEnumerable<(string EncryptedFilePath, string OutputFilePath, string Password)> files)
+        {
+            var tasks = files.Select(file =>
+                AES_GCM_Decrypt(file.EncryptedFilePath, file.OutputFilePath, file.Password));
+
+            bool[] results = await Task.WhenAll(tasks);
+
+            // Log results
+            for (int i = 0; i < files.Count(); i++)
+            {
+                var file = files.ElementAt(i);
+                Console.WriteLine($"File: {file.EncryptedFilePath} -> {(results[i] ? "Decrypted Successfully" : "Decryption Failed")}");
+            }
+        }
+
+        private static byte[] DeriveKeyFromPassword(string password, byte[] salt)
+        {
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
+            return pbkdf2.GetBytes(32); // 256-bit key
         }
     }
 }

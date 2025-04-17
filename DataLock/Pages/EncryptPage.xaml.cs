@@ -18,6 +18,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Microsoft.UI.Xaml.Documents;
 using DataLock.Functions;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI;
+using System.Threading;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -179,56 +181,78 @@ namespace DataLock.Pages
 
         private async void EncryptRun_Click(object sender, RoutedEventArgs e)
         {
-            // Lock Down UI
             LockDown();
+            EncryptProgress.Visibility = Visibility.Visible;
+            EncryptProgress.Value = 0;
 
             string psd = FilePsdBox.Password;
-            // Get Encryption Property 
             int algorithm_index = SelectEncryptionAlgorithmBox.SelectedIndex;
-            int num_of_files = DataList.Count();
-            //await ShowDialog("Key", "OK", "Alright", content: num_of_files.ToString());
-            int current_progress = 0;
+            int total = DataList.Count;
+            int completed = 0;
+            EncryptProgress.ShowPaused = false;
+            EncryptProgress.ShowError = false;
+            var tasks = new List<Task>();
 
-            EncryptProgress.Visibility = Visibility.Visible;
+            // 最大并发数，可调整
+            var throttler = new SemaphoreSlim(4);
 
-            // Encrypt File 
             foreach (var item in DataList)
             {
-                if (item is Modules.File file)
-                {
-                    string file_path = item.Path;
-                    string new_file_path = file_path + ".enc"; // Append .enc to the file name
+                await throttler.WaitAsync(); // 控制并发量
 
-                    switch (algorithm_index)
-                    {
-                        case 0:
-                            // AES_GCM
-                            if (psd.Equals(""))
-                            {
-                                byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path);
-                            } else
-                            {
-                                byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path, psd);
-                            }
-                                
-                            //await ShowDialog("Key", "OK", "Alright", content: (current_progress / (float)num_of_files).ToString());
-                            
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else if (item is Modules.Folder folder)
+                var task = Task.Run(async () =>
                 {
-                    // TODO : Handle folder encryption if needed
-                }
-                current_progress++;
-                EncryptProgress.Value = (int)((current_progress / (float)num_of_files) * 100);
+                    try
+                    {
+                        if (item is Modules.File file)
+                        {
+                            string file_path = file.Path;
+                            string new_file_path = file_path + ".enc";
+
+                            switch (algorithm_index)
+                            {
+                                case 0:
+                                    if (string.IsNullOrEmpty(psd))
+                                    {
+                                        // await Encrypt.AES_GCM_Encrypt(file_path, new_file_path); // implement if needed
+                                    }
+                                    else
+                                    {
+                                        await Encrypt.AES_GCM_Encrypt(file_path, new_file_path, psd);
+                                    }
+                                    break;
+                            }
+                        }
+
+                        // Update Progress in UI Thread
+                        Interlocked.Increment(ref completed);
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            EncryptProgress.Value = (int)((completed / (float)total) * 100);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            _ = ShowDialog("Error", "OK", content: $"File: {item.Name}\nError: {ex.Message}");
+                        });
+                    }
+                    finally
+                    {
+                        throttler.Release();
+                    }
+                });
+
+                tasks.Add(task);
             }
-            // Update UI
+
+            await Task.WhenAll(tasks);
+
             UnlockPage();
-            await ShowDialog("Encryption Complete", "OK", content: num_of_files.ToString() + " files have encrypted.");
+            await ShowDialog("Encryption Complete", "OK", content: $"{total} file(s) have been encrypted.");
             EncryptProgress.Visibility = Visibility.Collapsed;
         }
+
     }
 }

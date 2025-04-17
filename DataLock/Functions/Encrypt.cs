@@ -10,7 +10,7 @@ namespace DataLock.Functions
 {
     public class Encrypt
     {
-        public static byte[] AES_GCM_Encrypt(string inputFilePath, string outputFilePath, string password)
+        public static async Task<byte[]> AES_GCM_Encrypt(string inputFilePath, string outputFilePath, string password)
         {
             // Create Random Key
             byte[] salt = RandomNumberGenerator.GetBytes(16); // 256 bits
