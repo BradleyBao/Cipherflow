@@ -16,6 +16,8 @@ using Windows.Foundation.Collections;
 using DataLock.Modules;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.UI.Xaml.Documents;
+using DataLock.Functions;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -116,6 +118,82 @@ namespace DataLock.Pages
         {
             UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
             UploadBanner.BorderThickness = new Thickness(0);
+        }
+
+        private void isSaveInDifferentPath_Toggled(object sender, RoutedEventArgs e)
+        {
+            // If ison is true, show the path selection dialog
+            if (isSaveInDifferentPath.IsOn)
+            {
+                SavePathSettingCard.IsEnabled = true;
+                encryptSavePathSettingsCard.IsExpanded = true;
+            }
+            else
+            {
+                // Hide the path selection dialog
+                SavePathSettingCard.IsEnabled = false;
+                encryptSavePathSettingsCard.IsExpanded = false;
+            }
+        }
+
+        // DIY Function
+        //public delegate void Operation();
+
+        // Display Information
+        private async System.Threading.Tasks.Task<ContentDialogResult> ShowDialog(string title, 
+            string btn1, 
+            string btn2, 
+            string closebtn = "Cancel", 
+            ContentDialogButton DefaultButton = ContentDialogButton.Primary, 
+            string content = "")
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = title;
+            dialog.PrimaryButtonText = btn1;
+            dialog.SecondaryButtonText = btn2;
+            dialog.CloseButtonText = closebtn;
+            dialog.DefaultButton = DefaultButton;
+            dialog.Content = content;
+
+            var result = await dialog.ShowAsync();
+            return result;
+        }
+
+        private async void EncryptRun_Click(object sender, RoutedEventArgs e)
+        {
+            // Protect View
+            EncryptRun.IsEnabled = false;
+            // Get Encryption Property 
+            int algorithm_index = SelectEncryptionAlgorithmBox.SelectedIndex; 
+
+            // Encrypt File 
+            foreach (var item in DataList)
+            {
+                if (item is Modules.File file)
+                {
+                    string file_path = item.Path;
+                    string new_file_path = file_path + ".enc"; // Append .enc to the file name
+
+                    switch (algorithm_index)
+                    {
+                        case 0:
+                            // AES_GCM
+                            byte[] key = Encrypt.AES_GCM_Encrypt(file_path, new_file_path);
+                            await ShowDialog("Key", "OK", "Alright", content:BitConverter.ToString(key));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (item is Modules.Folder folder)
+                {
+                    // TODO : Handle folder encryption if needed
+                }
+            }
         }
     }
 }

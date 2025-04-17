@@ -10,5 +10,6 @@ namespace DataLock.Modules
         public string dataType { get; }
         public string dataFileIcon { get; }
         public DateTime DataModifiled { get; }
+        public bool Encrypted { get; set; }
     }
 }

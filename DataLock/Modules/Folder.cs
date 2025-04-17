@@ -16,6 +16,7 @@ namespace DataLock.Modules
         public string dataFileIcon => "\uE8B7";
         public string Path => folder_path;
         public DateTime DataModifiled => date_modified;
+        public bool Encrypted { get; set; } = false; // Default value is false
         public Folder(string folder_name, DateTime date_modified, string folder_path, Folder father_directory = null) {
             this.folder_name = folder_name; 
             this.date_modified = date_modified;

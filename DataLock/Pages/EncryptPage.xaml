@@ -52,15 +52,14 @@
 
                 <StackPanel Spacing="4">
                     <local:SettingsExpander x:Name="encryptMethodSettingsCard"
-             VerticalAlignment="Top"
-             Description="Choose the preferred encription method."
-             Header="Encription Method"
-                                     
-                                     HorizontalAlignment="Stretch"
-                                     Width="Auto"
+                                            VerticalAlignment="Top"
+                                            Description="Choose the preferred encription method."
+                                            Header="Encription Method"
+                                            HorizontalAlignment="Stretch"
+                                            Width="Auto"
              HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
-                        <ComboBox SelectedIndex="0">
+                        <ComboBox SelectedIndex="0" x:Name="SelectEncryptionAlgorithmBox">
                             <ComboBoxItem>AES-GCM</ComboBoxItem>
                             <ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
                             <ComboBoxItem>RSA + AES</ComboBoxItem>
@@ -75,6 +74,31 @@
                             <!--<local:SettingsCard ContentAlignment="Left">
          <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons." />
      </local:SettingsCard>-->
+
+                        </local:SettingsExpander.Items>
+                    </local:SettingsExpander>
+                    <local:SettingsExpander x:Name="encryptSavePathSettingsCard"
+                                            VerticalAlignment="Top"
+                                            Description="Save the files into specified directory. "
+                                            Header="Save in target folder"
+                                            HorizontalAlignment="Stretch"
+                                            Width="Auto"
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                        <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
+                        <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" Toggled="isSaveInDifferentPath_Toggled" />
+
+                        <local:SettingsExpander.Items>
+                            <local:SettingsCard Header="Choose Save Path"
+                                                Description="Save Path would display here. "
+                                                IsEnabled="False"
+                                                x:Name="SavePathSettingCard">
+                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" />
+                            </local:SettingsCard>
+
+
+                            <!--<local:SettingsCard ContentAlignment="Left">
+    <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons." />
+</local:SettingsCard>-->
 
                         </local:SettingsExpander.Items>
                     </local:SettingsExpander>
@@ -125,7 +149,11 @@ HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
                  <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
                     </TextBlock>
 
-                    <Button HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Content="Execute" />
+                    <Button HorizontalAlignment="Right" 
+                            x:Name="EncryptRun"
+                            Style="{StaticResource AccentButtonStyle}" 
+                            Content="Execute"
+                            Click="EncryptRun_Click"/>
                 </Grid>
 
                 <ScrollViewer>

@@ -20,6 +20,7 @@ namespace DataLock.Modules
         public string dataFileIcon => icon_name;
         public string Path => file_path;
         public DateTime DataModifiled => date_modified;
+        public bool Encrypted { get; set; } = false; // Default value is false
 
         public static readonly List<string> supported_executable_files = new List<string>()
         {
@@ -105,8 +106,25 @@ namespace DataLock.Modules
             this.this_file_ID = file_ID;
             this.date_modified = date_modified;
             this.icon_name = this.match_file_icon(file_type);
-
+            this.Encrypted = this.is_encrypted(file_type);
             file_ID += 1; 
+        }
+
+        internal bool is_encrypted(string file_type)
+        {
+            if (file_type == ".enc" || 
+                file_type == ".pem" || 
+                file_type == ".crt" || 
+                file_type == ".cer" || 
+                file_type == ".p12" || 
+                file_type == ".pfx")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         internal string match_file_icon(string file_type)
