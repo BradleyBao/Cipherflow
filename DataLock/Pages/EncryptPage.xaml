@@ -79,7 +79,7 @@
                     </local:SettingsExpander>
                     <local:SettingsExpander x:Name="encryptSavePathSettingsCard"
                                             VerticalAlignment="Top"
-                                            Description="Save the files into specified directory. "
+                                            Description="Choose the folder that will save the files."
                                             Header="Save in target folder"
                                             HorizontalAlignment="Stretch"
                                             Width="Auto"
@@ -89,10 +89,10 @@
 
                         <local:SettingsExpander.Items>
                             <local:SettingsCard Header="Choose Save Path"
-                                                Description="Save Path would display here. "
+                                                Description="Folder not selected. "
                                                 IsEnabled="False"
                                                 x:Name="SavePathSettingCard">
-                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" />
+                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
 
@@ -111,7 +111,7 @@
                     <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
                                  Header="Keep original files"
                                  HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
-                        <ToggleSwitch IsOn="True" />
+                        <ToggleSwitch x:Name="keepOriginalFile" IsOn="True" Toggled="keepOriginalFile_Toggled" />
                     </local:SettingsCard>
 
                     <local:SettingsCard x:Name="psdSettingCard"
@@ -157,7 +157,7 @@ HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
                 </Grid>
                 
                 <!--Progress Bar-->
-                <ProgressBar x:Name="EncryptProgress" Visibility="Visible" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
+                <ProgressBar x:Name="EncryptProgress" Visibility="Collapsed" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
 
                 <ScrollViewer>
                     <ItemsControl x:Name="EncryptFileDataGrid" ItemsSource="{x:Bind DataList, Mode=OneWay}">

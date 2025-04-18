@@ -157,7 +157,7 @@
                 </Grid>
 
                 <!--Progress Bar-->
-                <ProgressBar x:Name="DecryptProgress" Visibility="Visible" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
+                <ProgressBar x:Name="DecryptProgress" Visibility="Collapsed" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
 
                 <ScrollViewer>
                     <ItemsControl x:Name="DecryptFileDataGrid" ItemsSource="{x:Bind DataList, Mode=OneWay}">
