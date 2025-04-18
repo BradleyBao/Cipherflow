@@ -33,6 +33,7 @@ namespace DataLock
         {
             this.InitializeComponent();
             this.SetupTitleBar();
+            this.InitPage();
         }
 
         private void SetupTitleBar()
@@ -42,6 +43,14 @@ namespace DataLock
             AppTitle.Text = "Cipherflow"; // set title text
             SetTitleBar(AppTitleBar);      // set user ui element as titlebar
             this.AppWindow.SetIcon("Assets/CipherflowLogo.ico");
+        }
+
+        private void InitPage()
+        {
+            // Set the default page to be displayed
+            contentFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+            AppNav.SelectedItem = AppNav.MenuItems[0];
+            currentNavTag = 0;
         }
 
         private void AppNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

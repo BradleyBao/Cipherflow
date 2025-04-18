@@ -61,22 +61,28 @@
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <NavigationViewItemHeader Content="Cryptography"/>
-                    <NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
+                    <!--<NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>
-                    </NavigationViewItem>
-                    <NavigationViewItem Content="Encrypt" Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
+                    </NavigationViewItem>-->
+                    <NavigationViewItem Content="Encrypt" ToolTipService.ToolTip="Converting plaintext into ciphertext. " Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xE72E;" />
                         </NavigationViewItem.Icon>
-                        <NavigationViewItem.MenuItems>
+                        <!--<NavigationViewItem.MenuItems>
                             <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY"/>
-                        </NavigationViewItem.MenuItems>
+                        </NavigationViewItem.MenuItems>-->
                     </NavigationViewItem>
-                    <NavigationViewItem Content="Decrypt" Tag="Decrypt" x:Name="DecryptNav" SelectsOnInvoked="True">
+                    <NavigationViewItem Content="Decrypt" Tag="Decrypt" ToolTipService.ToolTip="Converting ciphertext into plaintext. " x:Name="DecryptNav" SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xE785;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItemHeader Content="Customize"/>
+                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                 </NavigationView.MenuItems>
