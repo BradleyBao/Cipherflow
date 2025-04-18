@@ -20,6 +20,9 @@ using DataLock.Functions;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
 using System.Threading;
+using Windows.Storage.AccessCache;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -37,41 +40,78 @@ namespace DataLock.Pages
         public ObservableCollection<DataLock.Modules.Folder> FolderList { get; } = new ObservableCollection<DataLock.Modules.Folder>();
 
         public ObservableCollection<DataLock.Modules.DataType> DataList { get; set; } = new ObservableCollection<DataLock.Modules.DataType>();
-
+        public string targetPath = string.Empty;
+        private bool isSaveInDifferentPathVar = false;
+        private bool keepCurrentFile = false;
         public DecryptPage()
         {
             this.InitializeComponent();
         }
 
-        private async System.Threading.Tasks.Task<ContentDialogResult> ShowDialog(string title,
-            string btn1,
-            string btn2 = "",
-            string closebtn = "Cancel",
-            ContentDialogButton DefaultButton = ContentDialogButton.Primary,
-            string content = "")
+        // Display Information
+        private bool isDialogOpen = false;
+
+        private async Task<ContentDialogResult> ShowDialog(string title, string btn1, string btn2 = "", string closebtn = "Cancel", ContentDialogButton DefaultButton = ContentDialogButton.Primary, string content = "")
         {
-            ContentDialog dialog = new ContentDialog();
+            if (isDialogOpen) return ContentDialogResult.None; // 防止重复显示
+            isDialogOpen = true;
 
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = title;
-            dialog.PrimaryButtonText = btn1;
-            if (!btn2.Equals(""))
+            try
             {
-                dialog.SecondaryButtonText = btn2;
-            }
-            dialog.SecondaryButtonText = btn2;
-            dialog.CloseButtonText = closebtn;
-            dialog.DefaultButton = DefaultButton;
-            dialog.Content = content;
+                ContentDialog dialog = new ContentDialog
+                {
+                    XamlRoot = this.XamlRoot,
+                    Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                    Title = title,
+                    PrimaryButtonText = btn1,
+                    SecondaryButtonText = string.IsNullOrEmpty(btn2) ? null : btn2,
+                    CloseButtonText = closebtn,
+                    DefaultButton = DefaultButton,
+                    Content = content
+                };
 
-            var result = await dialog.ShowAsync();
-            return result;
+                return await dialog.ShowAsync();
+            }
+            finally
+            {
+                isDialogOpen = false;
+            }
+        }
+
+        private async Task<bool> CheckAllCondition()
+        {
+            // Check if password is empty or not
+            if (string.IsNullOrEmpty(FilePsdBox.Password))
+            {
+                await ShowDialog("Error", "OK", content: "Password cannot be empty.");
+                return false;
+            }
+
+            // Check if if save in different path is selected 
+            if (isSaveInDifferentPath.IsOn)
+            {
+                // Check if the path is empty
+                if (string.IsNullOrEmpty(targetPath))
+                {
+                    await ShowDialog("Error", "OK", content: "Please select a save path.");
+                    return false;
+                }
+            }
+
+            // Check if the selected files are empty
+            if (DataList.Count == 0)
+            {
+                await ShowDialog("Error", "OK", content: "Please select files to encrypt.");
+                return false;
+            }
+
+            return true;
         }
 
         public async void DecryptRun_Click(object sender, RoutedEventArgs e)
         {
+            // Check all conditions
+            if (!await CheckAllCondition()) return;
             LockDown();
             DecryptProgress.Visibility = Visibility.Visible;
 
@@ -80,6 +120,7 @@ namespace DataLock.Pages
             int num_of_files = DataList.Count;
             int current_progress = 0;
             int error_time = 0;
+            string new_file_path = "";
             DecryptProgress.ShowPaused = false;
             DecryptProgress.ShowError = false;
 
@@ -89,18 +130,32 @@ namespace DataLock.Pages
             {
                 if (item is Modules.File file)
                 {
-                    string file_path = file.Path;
-                    string new_file_path = file_path.Substring(0, file_path.Length - 4);
-
                     var task = Task.Run(async () =>
                     {
                         bool result = false;
+                        string file_path = file.Path;
+                        if (!string.IsNullOrEmpty(targetPath) && isSaveInDifferentPathVar)
+                        {
+                            new_file_path = Path.Combine(targetPath, file.Name);
+                        }
+                        else
+                        {
+                            new_file_path = file_path.Substring(0, file_path.Length - 4);
+                        }
                         switch (algorithm_index)
                         {
                             case 0:
                                 if (!string.IsNullOrEmpty(psd))
                                 {
                                     result = await Decrypt.AES_GCM_Decrypt(file_path, new_file_path, psd);
+                                    if (result)
+                                    {
+                                        // Decrypt success
+                                        if (!keepCurrentFile)
+                                        {
+                                            System.IO.File.Delete(file_path);
+                                        }
+                                    }
                                 }
                                 break;
                             default:
@@ -240,15 +295,63 @@ namespace DataLock.Pages
             // If ison is true, show the path selection dialog
             if (isSaveInDifferentPath.IsOn)
             {
+                isSaveInDifferentPathVar = true;
                 SavePathSettingCard.IsEnabled = true;
                 decryptSavePathSettingsCard.IsExpanded = true;
             }
             else
             {
                 // Hide the path selection dialog
+                isSaveInDifferentPathVar = false;
                 SavePathSettingCard.IsEnabled = false;
                 decryptSavePathSettingsCard.IsExpanded = false;
             }
+        }
+
+        private void keepOriginalFile_Toggled(object sender, RoutedEventArgs e)
+        {
+            // If ison is true, show the path selection dialog
+            if (keepOriginalFile.IsOn)
+            {
+                keepCurrentFile = true;
+            }
+            else
+            {
+                // Hide the path selection dialog
+                keepCurrentFile = false;
+            }
+        }
+
+        private async void ChooseSavePathFolder_Click(object sender, RoutedEventArgs e)
+        {
+            ChooseSavePathFolder.IsEnabled = false;
+            // Open a folder picker dialog to select the save path
+            // Create a folder picker
+            FolderPicker openPicker = new Windows.Storage.Pickers.FolderPicker();
+
+            // See the sample code below for how to make the window accessible from the App class.
+            var window = App.m_window;
+
+            // Retrieve the window handle (HWND) of the current WinUI 3 window.
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+            // Initialize the folder picker with the window handle (HWND).
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+            // Set options for your folder picker
+            openPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+            openPicker.FileTypeFilter.Add("*");
+
+            // Open the picker for the user to pick a folder
+            StorageFolder folder = await openPicker.PickSingleFolderAsync();
+            if (folder != null)
+            {
+                StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+                SavePathSettingCard.Description = "Selected Folder: " + folder.Name;
+                targetPath = folder.Path; // Store the selected path
+            }
+
+            ChooseSavePathFolder.IsEnabled = true; // Re-enable the button
         }
     }
 }

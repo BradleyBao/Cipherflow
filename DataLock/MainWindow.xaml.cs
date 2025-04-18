@@ -39,8 +39,9 @@ namespace DataLock
         {
             // C# code to set AppTitleBar uielement as titlebar
             ExtendsContentIntoTitleBar = true;  // enable custom titlebar
-            AppTitle.Text = "DataLock"; // set title text
+            AppTitle.Text = "Cipherflow"; // set title text
             SetTitleBar(AppTitleBar);      // set user ui element as titlebar
+            this.AppWindow.SetIcon("Assets/CipherflowLogo.ico");
         }
 
         private void AppNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

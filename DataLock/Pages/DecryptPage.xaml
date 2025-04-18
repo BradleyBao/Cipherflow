@@ -92,7 +92,7 @@
                                                 Description="Save Path would display here. "
                                                 IsEnabled="False"
                                                 x:Name="SavePathSettingCard">
-                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" />
+                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
 
@@ -111,7 +111,7 @@
                     <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
                                  Header="Keep original files"
                                  HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
-                        <ToggleSwitch IsOn="True" />
+                        <ToggleSwitch x:Name="keepOriginalFile" IsOn="True" Toggled="keepOriginalFile_Toggled" />
                     </local:SettingsCard>
 
                     <local:SettingsCard x:Name="psdSettingCard"

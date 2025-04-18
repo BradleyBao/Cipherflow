@@ -25,7 +25,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Source="Assets/DataLock.scale-200.png" 
+            <Image 
+                x:Name="AppIcon"
+                Source="/Assets/CipherflowLogo.png" 
                Width="16" 
                Height="16" 
                VerticalAlignment="Center"
