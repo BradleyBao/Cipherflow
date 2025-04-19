@@ -13,7 +13,7 @@
 
     <ScrollViewer Margin="5 10" HorizontalAlignment="Stretch">
         <Grid>
-            <StackPanel Padding="20" Spacing="16" MaxWidth="1300" HorizontalAlignment="Stretch" Width="Auto">
+            <StackPanel Padding="20" Spacing="16" MaxWidth="1100" HorizontalAlignment="Stretch" Width="Auto">
                 <win:StackPanel.ChildrenTransitions>
                     <TransitionCollection>
                         <win:EntranceThemeTransition FromVerticalOffset="50" />

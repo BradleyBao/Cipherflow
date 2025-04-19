@@ -165,14 +165,14 @@ Text="This is content" />-->
                             </local:SettingsCard>
 
                             <local:SettingsCard x:Name="software_bio_setting"
-                                Description="Add fingerprint authtication for this software. "
+                                Description="Add fingerprint authtication to this software. "
                                 Header="Fingerprint"
                                 HeaderIcon="{ui:FontIcon Glyph=&#xE928;}"
                                 IsClickEnabled="True">
                             </local:SettingsCard>
 
                             <local:SettingsCard x:Name="software_facial_setting"
-                                                Description="Add facial authtication for this software. "
+                                                Description="Add facial authtication to this software. "
                                                 Header="Face"
                                                 HeaderIcon="{ui:FontIcon Glyph=&#xEB68;}"
                                                 IsClickEnabled="True">
