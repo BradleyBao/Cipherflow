@@ -27,6 +27,8 @@ namespace DataLock
     {
 
         public static readonly string[] navTagList = { "Home", "Encrypt", "Decrypt", "DynamicsLock", "Settings" };
+        private Dictionary<Type, NavigationViewItem> pageToMenuItemMap = new Dictionary<Type, NavigationViewItem>();
+
         private int currentNavTag = 0;
 
         public MainWindow()
@@ -51,6 +53,59 @@ namespace DataLock
             contentFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             AppNav.SelectedItem = AppNav.MenuItems[0];
             currentNavTag = 0;
+
+            // Map pages to menu items
+            contentFrame.Navigated += OnNavigated;
+            pageToMenuItemMap.Add(typeof(HomePage), HomePageNav);
+            pageToMenuItemMap.Add(typeof(EncryptPage), EncryptNav);
+            pageToMenuItemMap.Add(typeof(DecryptPage), DecryptNav);
+            //pageToMenuItemMap.Add(typeof(EncryptDIYPage), EncryptDIYNav);
+
+        }
+
+        private void OnNavigated(object sender, NavigationEventArgs e)
+        {
+
+            var itemType = e.SourcePageType;
+
+            if (itemType == typeof(SettingPage))
+            {
+                AppNav.SelectedItem = AppNav.SettingsItem;
+            }
+            else if (pageToMenuItemMap.TryGetValue(itemType, out var menuItem))
+            {
+                AppNav.SelectedItem = menuItem;
+            }
+
+            // Check is go back available
+            AppNav.IsBackEnabled = contentFrame.CanGoBack;
+        }
+
+        public void GoToPage(string tag, NavigationTransitionInfo effect = null)
+        {
+            //int index = Array.IndexOf(navTagList, tag);
+            // Change the navbar selection
+            
+            switch (tag)
+            {
+                case "Home":
+                    contentFrame.Navigate(typeof(HomePage), null, effect);
+                    break;
+                case "Encrypt":
+                    contentFrame.Navigate(typeof(EncryptPage), null, effect);
+                    break;
+                case "Decrypt":
+                    contentFrame.Navigate(typeof(DecryptPage), null, effect);
+                    break;
+                case "DynamicsLock":
+                    contentFrame.Navigate(typeof(DynamicsLockPage), null, effect);
+                    break;
+                case "Settings":
+                    contentFrame.Navigate(typeof(SettingPage), null, effect);
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void AppNav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

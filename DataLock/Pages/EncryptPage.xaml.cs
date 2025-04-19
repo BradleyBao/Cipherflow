@@ -90,8 +90,8 @@ namespace DataLock.Pages
                     }
                 }
                 UpdateList();
-                UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.LightGray);
-                UploadBanner.BorderThickness = new Thickness(2);
+                UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
+                UploadBanner.BorderThickness = new Thickness(1);
             }
         }
 
@@ -126,7 +126,7 @@ namespace DataLock.Pages
         private void UploadBanner_DragLeave(object sender, DragEventArgs e)
         {
             UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
-            UploadBanner.BorderThickness = new Thickness(0);
+            UploadBanner.BorderThickness = new Thickness(1);
         }
 
         private void isSaveInDifferentPath_Toggled(object sender, RoutedEventArgs e)
@@ -263,14 +263,14 @@ namespace DataLock.Pages
                             {
                                 new_file_path = file_path + ".enc";
                             }
-                                
+
 
                             switch (algorithm_index)
                             {
                                 case 0:
                                     if (string.IsNullOrEmpty(psd))
                                     {
-                                         //await Encrypt.AES_GCM_Encrypt(file_path, new_file_path); // implement if needed
+                                        //await Encrypt.AES_GCM_Encrypt(file_path, new_file_path); // implement if needed
                                     }
                                     else
                                     {
@@ -310,7 +310,20 @@ namespace DataLock.Pages
             await Task.WhenAll(tasks);
 
             UnlockPage();
-            await ShowDialog("Encryption Complete", "OK", content: $"{total} file(s) have been encrypted.");
+            ContentDialogResult result_from_dialog = await ShowDialog("Encryption Complete", "OK", content: $"{total} file(s) have been encrypted.\nOpen Folder?");
+
+            // if user clicks "OK" button
+            if (result_from_dialog == ContentDialogResult.Primary)
+            {
+                // Open the folder where the encrypted files are saved
+                string _targetPath = System.IO.Path.GetDirectoryName(new_file_path);
+                var folder = await StorageFolder.GetFolderFromPathAsync(_targetPath);
+                await Windows.System.Launcher.LaunchFolderAsync(folder); // Fix: Pass FolderLauncherOptions as the second argument
+            }
+
+            // Clear the input files 
+            DataList.Clear();
+
             EncryptProgress.Visibility = Visibility.Collapsed;
         }
 

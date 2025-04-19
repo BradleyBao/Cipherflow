@@ -12,6 +12,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using System.Security.Principal;
+using Microsoft.UI.Xaml.Media.Animation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,6 +28,26 @@ namespace DataLock.Pages
         public HomePage()
         {
             this.InitializeComponent();
+            this.InitUI();
+        }
+
+        public void InitUI()
+        {
+            // Set up Hello {username} text
+            // Get the username from Windows credentials
+            string username = WindowsIdentity.GetCurrent().Name;
+            WelcomeMsg.Text = "Hello " + username.Split('\\')[1] + "!";
+        }
+
+        private void cryptography_encryptPage_Click(object sender, RoutedEventArgs e)
+        {
+            // Go to Encrypt page
+            App.m_window.GoToPage("Encrypt", new DrillInNavigationTransitionInfo());
+        }
+
+        private void cryptography_decryptPage_Click(object sender, RoutedEventArgs e)
+        {
+            App.m_window.GoToPage("Decrypt", new DrillInNavigationTransitionInfo());
         }
     }
 }

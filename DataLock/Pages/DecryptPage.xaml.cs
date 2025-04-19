@@ -195,7 +195,23 @@ namespace DataLock.Pages
                 DecryptProgress.ShowError = false;
             }
 
-            await ShowDialog("Decryption Complete", "OK", content: $"{complete_files} files decrypted. {error_time} failed.");
+            ContentDialogResult result_from_dialog = await ShowDialog("Decryption Complete", "OK", content: $"{complete_files} files decrypted. {error_time} failed. Open Folder?");
+
+            // if user clicks "OK" button
+            if (result_from_dialog == ContentDialogResult.Primary)
+            {
+                // Open the folder where the encrypted files are saved
+                string _targetPath = System.IO.Path.GetDirectoryName(new_file_path);
+                var folder = await StorageFolder.GetFolderFromPathAsync(_targetPath);
+                await Windows.System.Launcher.LaunchFolderAsync(folder); // Fix: Pass FolderLauncherOptions as the second argument
+            }
+
+            // Clear the input files if all files are successfully decrypted
+            if (complete_files == num_of_files)
+            {
+                DataList.Clear();
+            }
+
             DecryptProgress.Visibility = Visibility.Collapsed;
         }
 
@@ -241,8 +257,8 @@ namespace DataLock.Pages
                     }
                 }
                 UpdateList();
-                UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.LightGray);
-                UploadBanner.BorderThickness = new Thickness(2);
+                UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
+                UploadBanner.BorderThickness = new Thickness(1);
             }
         }
 
@@ -287,7 +303,7 @@ namespace DataLock.Pages
         private void UploadBanner_DragLeave(object sender, DragEventArgs e)
         {
             UploadBanner.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
-            UploadBanner.BorderThickness = new Thickness(0);
+            UploadBanner.BorderThickness = new Thickness(1);
         }
 
         private void isSaveInDifferentPath_Toggled(object sender, RoutedEventArgs e)

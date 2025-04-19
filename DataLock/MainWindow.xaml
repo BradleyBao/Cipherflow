@@ -80,7 +80,7 @@
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <NavigationViewItemHeader Content="Customize"/>
-                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY">
+                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIYNav" x:Name="EncryptDIY">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>
