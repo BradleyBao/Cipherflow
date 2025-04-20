@@ -22,11 +22,9 @@
                 </win:StackPanel.ChildrenTransitions>
                 <TextBlock x:Uid="EncryptPage_Title" Style="{StaticResource TitleTextBlockStyle}">Encrypt</TextBlock>
                 <!--信息提示条-->
-                <InfoBar 
-         Title="Fonts Control Panel is being redirected here." 
-         Message="To access the legacy interface, click this link or navigate to C:\WINDOWS\Fonts in File Explorer." 
-         IsOpen="True" 
-         Severity="Informational" />
+                <InfoBar x:Name="EncryptInfoBar"
+                         IsOpen="False" 
+                         Severity="Informational" />
 
                 <!-- Files dragging areas -->
                 <Border x:Name="UploadBanner" 
@@ -62,8 +60,8 @@
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
                         <ComboBox SelectedIndex="0" x:Name="SelectEncryptionAlgorithmBox">
                             <ComboBoxItem>AES-GCM</ComboBoxItem>
-                            <ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
-                            <ComboBoxItem>RSA + AES</ComboBoxItem>
+                            <!--<ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
+                            <ComboBoxItem>RSA + AES</ComboBoxItem>-->
                         </ComboBox>
 
                         <local:SettingsExpander.Items>
@@ -107,6 +105,7 @@
                     </local:SettingsExpander>
                     <local:SettingsCard Description="This file can only decrypt in this deivce."
                                         Header="This device only"
+                                        IsEnabled="False"
                                         x:Uid="EncryptPage_ThisDeviceOnly_Uid"
                             HeaderIcon="{ui:FontIcon Glyph=&#xEC4E;}">
                         <ToggleSwitch />

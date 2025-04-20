@@ -247,7 +247,7 @@
     <value>加密方式</value>
   </data>
   <data name="encryptMethodSettingsCardUid.Description" xml:space="preserve">
-    <value>选择偏好加密</value>
+    <value>选择偏好加密算法</value>
   </data>
   <data name="encryptSavePathSettingsCardUid.Header" xml:space="preserve">
     <value>在目标文件夹保存</value>
@@ -277,12 +277,66 @@
     <value>为所有文件设置密码</value>
   </data>
   <data name="EncryptPage_FilePsdBox_PsdBox.PlaceholderText" xml:space="preserve">
-    <value>输入加密的密码</value>
+    <value>输入用于加密的密码</value>
   </data>
   <data name="EncryptRun_Btn.Content" xml:space="preserve">
     <value>执行</value>
   </data>
   <data name="SelectedEncryptFilesTitle.Text" xml:space="preserve">
     <value>已选择文件：</value>
+  </data>
+  <data name="DecryptPage_Title.Text" xml:space="preserve">
+    <value>解密</value>
+  </data>
+  <data name="DecryptPage_Upload_Des.Text" xml:space="preserve">
+    <value>拖拽来添加文件或文件夹</value>
+  </data>
+  <data name="DecryptPage_Upload_Des_Long.Text" xml:space="preserve">
+    <value>从文件资源管理器或桌面拖动文件并将其放置在此处以添加到加密列表中。</value>
+  </data>
+  <data name="decryptMethodSettingsCardUid.Header" xml:space="preserve">
+    <value>解密方式</value>
+  </data>
+  <data name="decryptMethodSettingsCardUid.Description" xml:space="preserve">
+    <value>选择偏好解密算法</value>
+  </data>
+  <data name="DeBrowseAndAllFilesBtn_Btn.Content" xml:space="preserve">
+    <value>浏览并添加文件</value>
+  </data>
+  <data name="decryptSavePathSettingsCardUid.Header" xml:space="preserve">
+    <value>在目标文件夹保存</value>
+  </data>
+  <data name="decryptSavePathSettingsCardUid.Description" xml:space="preserve">
+    <value>选择保存文件的文件夹</value>
+  </data>
+  <data name="DecryptPage_PasswordSettingCard_Uid.Header" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="DecryptPage_PasswordSettingCard_Uid.Description" xml:space="preserve">
+    <value>为加密文件输入密码</value>
+  </data>
+  <data name="DecryptPage_FilePsdBox_PsdBox.PlaceholderText" xml:space="preserve">
+    <value>输入用于解密的密码</value>
+  </data>
+  <data name="SelectedDecryptFilesTitle.Text" xml:space="preserve">
+    <value>已选择文件：</value>
+  </data>
+  <data name="DecryptRun_Btn.Content" xml:space="preserve">
+    <value>执行</value>
+  </data>
+  <data name="SettingSevere" xml:space="preserve">
+    <value>尚未完成安全设置</value>
+  </data>
+  <data name="SettingModerate" xml:space="preserve">
+    <value>一些安全设置尚未被配置</value>
+  </data>
+  <data name="SettingSafe" xml:space="preserve">
+    <value>安全设置已完善</value>
+  </data>
+  <data name="UnderDevelopmentTitle" xml:space="preserve">
+    <value>仍在开发</value>
+  </data>
+  <data name="UnderDevelopmentContent" xml:space="preserve">
+    <value>一些功能仍在开发中</value>
   </data>
 </root>

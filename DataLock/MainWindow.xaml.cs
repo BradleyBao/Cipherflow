@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -39,6 +40,7 @@ namespace DataLock
             this.InitializeComponent();
             this.SetupTitleBar();
             this.InitPage();
+            this.Closed += MainWindow_Closed;
         }
 
         private void SetupTitleBar()
@@ -64,6 +66,11 @@ namespace DataLock
             pageToMenuItemMap.Add(typeof(DecryptPage), DecryptNav);
             //pageToMenuItemMap.Add(typeof(EncryptDIYPage), EncryptDIYNav);
 
+        }
+
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            SettingManager.Unlocked = false;
         }
 
         public void LockDown()

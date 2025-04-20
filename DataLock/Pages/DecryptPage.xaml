@@ -20,12 +20,10 @@
                         <win:RepositionThemeTransition IsStaggeringEnabled="False" />
                     </TransitionCollection>
                 </win:StackPanel.ChildrenTransitions>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Decrypt</TextBlock>
+                <TextBlock x:Uid="DecryptPage_Title" Style="{StaticResource TitleTextBlockStyle}">Decrypt</TextBlock>
                 <!--信息提示条-->
-                <InfoBar 
-                     Title="Fonts Control Panel is being redirected here." 
-                     Message="To access the legacy interface, click this link or navigate to C:\WINDOWS\Fonts in File Explorer." 
-                     IsOpen="True" 
+                <InfoBar x:Name="DecryptInfoBar"
+                     IsOpen="False" 
                      Severity="Informational" />
 
                 <!-- Files dragging areas -->
@@ -43,15 +41,16 @@
                  DragLeave="UploadBanner_DragLeave">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
                         <FontIcon Glyph="&#xE710;" FontSize="36" />
-                        <TextBlock Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
-                        <TextBlock Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
+                        <TextBlock x:Uid="DecryptPage_Upload_Des" Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock x:Uid="DecryptPage_Upload_Des_Long" Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
                         TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
-                        <Button HorizontalAlignment="Center" Content="Browse and add files" />
+                        <Button x:Name="DeBrowseAndAllFilesBtn" x:Uid="DeBrowseAndAllFilesBtn_Btn" HorizontalAlignment="Center" Content="Browse and add files" />
                     </StackPanel>
                 </Border>
 
                 <StackPanel Spacing="4">
                     <local:SettingsExpander x:Name="decryptMethodSettingsCard"
+                                            x:Uid="decryptMethodSettingsCardUid"
                                             VerticalAlignment="Top"
                                             Description="Choose the preferred encription method."
                                             Header="Decryption Method"
@@ -61,8 +60,8 @@
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
                         <ComboBox SelectedIndex="0" x:Name="SelectDecryptionAlgorithmBox">
                             <ComboBoxItem>AES-GCM</ComboBoxItem>
-                            <ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
-                            <ComboBoxItem>RSA + AES</ComboBoxItem>
+                            <!--<ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
+                            <ComboBoxItem>RSA + AES</ComboBoxItem>-->
                         </ComboBox>
 
                         <local:SettingsExpander.Items>
@@ -78,6 +77,7 @@
                         </local:SettingsExpander.Items>
                     </local:SettingsExpander>
                     <local:SettingsExpander x:Name="decryptSavePathSettingsCard"
+                                            x:Uid="decryptSavePathSettingsCardUid"
                                             VerticalAlignment="Top"
                                             Description="Save the files into specified directory. "
                                             Header="Save in target folder"
@@ -91,7 +91,8 @@
                             <local:SettingsCard Header="Choose Save Path"
                                                 Description="Save Path would display here. "
                                                 IsEnabled="False"
-                                                x:Name="SavePathSettingCard">
+                                                x:Name="SavePathSettingCard"
+                                                x:Uid="SavePathSettingCardUid">
                                 <Button x:Name="ChooseSavePathFolder" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
@@ -109,17 +110,19 @@
                     </local:SettingsCard>-->
 
                     <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
-                                 Header="Keep original files"
-                                 HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
+                                        Header="Keep original files"
+                                        x:Uid="KeepOriginalFilesSettingCardUID"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
                         <ToggleSwitch x:Name="keepOriginalFile" IsOn="True" Toggled="keepOriginalFile_Toggled" />
                     </local:SettingsCard>
 
                     <local:SettingsCard x:Name="psdSettingCard"
                                         Description="Enter Password for encrypted files"
                                         Header="Password"
+                                        x:Uid="DecryptPage_PasswordSettingCard_Uid"
                                         HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
 
-                        <PasswordBox x:Name="FilePsdBox" Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
+                        <PasswordBox x:Name="FilePsdBox" x:Uid="DecryptPage_FilePsdBox_PsdBox" Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
 
                     </local:SettingsCard>
 
@@ -143,7 +146,8 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock>
-                 <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}">
+                 <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                      x:Uid="SelectedDecryptFilesTitle">
                      Selected Files: </Run>
                  <LineBreak/>
                  <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
@@ -153,6 +157,7 @@
                             x:Name="DecryptRun"
                             Style="{StaticResource AccentButtonStyle}" 
                             Content="Execute"
+                            x:Uid="DecryptRun_Btn"
                             Click="DecryptRun_Click"/>
                 </Grid>
 

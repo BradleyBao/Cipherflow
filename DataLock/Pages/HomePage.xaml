@@ -59,7 +59,7 @@
                         <FontIcon Glyph="&#xE777;" FontSize="20"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="Current Version" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                            <TextBlock Text="1.0.0" Style="{StaticResource CaptionTextBlockStyle}"/>
+                            <TextBlock x:Name="Version" Text="1.0.0" Style="{StaticResource CaptionTextBlockStyle}"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -113,8 +113,11 @@ Text="This is content" />-->
                                        x:Name="security_setting_status"
                                        TextWrapping="Wrap" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <ProgressBar Value="80" Margin="0,8,0,4"/>
-                            <TextBlock Text="4 out of 5 settings" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <ProgressBar x:Name="SecuritySettingBar" Value="80" Margin="0,8,0,4"
+                                         />
+                            <TextBlock x:Name="SecuritySettingTip" 
+                                       Style="{StaticResource CaptionTextBlockStyle}" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             <Button x:Name="configureSetting" 
                                     Click="configureSetting_Click"
                                     x:Uid="HomePage_Configure_Setting_Btn" 

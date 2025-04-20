@@ -24,6 +24,12 @@ namespace DataLock.Functions
             set => settings.Values["password"] = value;
         }
 
+        public static bool Unlocked
+        {
+            get => settings.Values["unlocked"] is bool unlocked ? unlocked : false;
+            set => settings.Values["unlocked"] = value;
+        }
+
         public static bool MFA
         {
             get => settings.Values["MFAOn"] is bool mfa ? mfa : false;

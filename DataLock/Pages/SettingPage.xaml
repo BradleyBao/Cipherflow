@@ -74,6 +74,7 @@
                 <controls:SettingsExpander Description="Setup Multi-factor authentication."
                                            Header="MFA"
                                            x:Uid="SettingPage_MFA_Title"
+                                           IsEnabled="False"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE83D;}">
                     <ToggleSwitch IsOn="False" />
 

@@ -87,8 +87,8 @@
                             <FontIcon Glyph="&#xE785;" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItemHeader Content="Customize"/>
-                    <NavigationViewItem Content="DIY" 
+                    <!--<NavigationViewItemHeader Content="Customize"/>-->
+                    <!--<NavigationViewItem Content="DIY" 
                                         ToolTipService.ToolTip="Create your own encription flow" 
                                         Tag="EncryptDIYNav" 
                                         x:Uid="NavDIY"
@@ -96,7 +96,7 @@
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>
-                    </NavigationViewItem>
+                    </NavigationViewItem>-->
                 </NavigationView.MenuItems>
 
                 <Frame x:Name="contentFrame">

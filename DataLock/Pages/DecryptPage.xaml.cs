@@ -23,6 +23,7 @@ using System.Threading;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 using Windows.Storage;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -46,6 +47,19 @@ namespace DataLock.Pages
         public DecryptPage()
         {
             this.InitializeComponent();
+            this.InitUI();
+        }
+
+        private void InitUI()
+        {
+            var loader = new ResourceLoader();
+            string news_title = loader.GetString("UnderDevelopmentTitle");
+            string news_content = loader.GetString("UnderDevelopmentContent");
+            // Set News
+            DecryptInfoBar.IsOpen = true;
+            DecryptInfoBar.Severity = InfoBarSeverity.Warning;
+            DecryptInfoBar.Title = news_title;
+            DecryptInfoBar.Message = news_content;
         }
 
         // Display Information

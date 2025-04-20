@@ -18,6 +18,7 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using DataLock.Functions;
 using DataLock.Modules;
+using Windows.ApplicationModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,7 +46,7 @@ namespace DataLock.Pages
         public async void Auth_user()
         {
             // If password is enabled, show dialog and lock down the page
-            if (SettingManager.Password)
+            if (SettingManager.Password && !SettingManager.Unlocked)
             {
                 string username = WindowsIdentity.GetCurrent().Name;
                 var loader = new ResourceLoader();
@@ -86,7 +87,7 @@ namespace DataLock.Pages
                         string storedPassword = credential.Password;
                         if (password == storedPassword)
                         {
-                            
+                            SettingManager.Unlocked = true;
                         }
                         else
                         {
@@ -126,7 +127,46 @@ namespace DataLock.Pages
             string welcomeMsg = loader.GetString("WelcomeText");
             WelcomeMsg.Text = welcomeMsg + " " + username.Split('\\')[1] + "!";
 
-            
+            // Security Setting 
+            int total_security = 2;
+            int security_count = 0;
+            if (SettingManager.Password)
+            {
+                security_count++;
+            }
+            if (SettingManager.MFA)
+            {
+                security_count++;
+            }
+            int bar_width = (int)((security_count / (float)total_security) * 100);
+            SecuritySettingBar.Value = bar_width;
+
+            // Set Text 
+            switch (security_count)
+            {
+                case 0:
+                    SecuritySettingTip.Text = loader.GetString("SettingSevere");
+                    SecuritySettingBar.Value = 10;
+                    SecuritySettingBar.ShowError = true;
+                    break;
+                case 1:
+                    SecuritySettingTip.Text = loader.GetString("SettingModerate");
+                    SecuritySettingBar.ShowPaused = true;
+                    break;
+                case 2:
+                    SecuritySettingTip.Text = loader.GetString("SettingSafe");
+                    break;
+            }
+
+            // Get the version 
+            Version.Text = GetAppVersion();
+        }
+
+        private string GetAppVersion()
+        {
+            // 获取应用程序的Assembly版本信息
+            var version = Package.Current.Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
         }
 
         private void cryptography_encryptPage_Click(object sender, RoutedEventArgs e)
