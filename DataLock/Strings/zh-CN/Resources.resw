@@ -243,4 +243,46 @@
   <data name="BrowseAndAllFilesBtn_Btn.Content" xml:space="preserve">
     <value>浏览并添加文件</value>
   </data>
+  <data name="encryptMethodSettingsCardUid.Header" xml:space="preserve">
+    <value>加密方式</value>
+  </data>
+  <data name="encryptMethodSettingsCardUid.Description" xml:space="preserve">
+    <value>选择偏好加密</value>
+  </data>
+  <data name="encryptSavePathSettingsCardUid.Header" xml:space="preserve">
+    <value>在目标文件夹保存</value>
+  </data>
+  <data name="encryptSavePathSettingsCardUid.Description" xml:space="preserve">
+    <value>选择保存文件的文件夹</value>
+  </data>
+  <data name="SavePathSettingCardUid.Header" xml:space="preserve">
+    <value>选择保存路径</value>
+  </data>
+  <data name="EncryptPage_ThisDeviceOnly_Uid.Header" xml:space="preserve">
+    <value>仅限此设备</value>
+  </data>
+  <data name="EncryptPage_ThisDeviceOnly_Uid.Description" xml:space="preserve">
+    <value>文件只能在此设备解密</value>
+  </data>
+  <data name="KeepOriginalFilesSettingCardUID.Header" xml:space="preserve">
+    <value>保留原始文件</value>
+  </data>
+  <data name="KeepOriginalFilesSettingCardUID.Description" xml:space="preserve">
+    <value>选择该选项将复制加密的目标文件。</value>
+  </data>
+  <data name="EncryptPage_PasswordSettingCard_Uid.Header" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="EncryptPage_PasswordSettingCard_Uid.Description" xml:space="preserve">
+    <value>为所有文件设置密码</value>
+  </data>
+  <data name="EncryptPage_FilePsdBox_PsdBox.PlaceholderText" xml:space="preserve">
+    <value>输入加密的密码</value>
+  </data>
+  <data name="EncryptRun_Btn.Content" xml:space="preserve">
+    <value>执行</value>
+  </data>
+  <data name="SelectedEncryptFilesTitle.Text" xml:space="preserve">
+    <value>已选择文件：</value>
+  </data>
 </root>

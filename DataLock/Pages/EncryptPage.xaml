@@ -52,6 +52,7 @@
 
                 <StackPanel Spacing="4">
                     <local:SettingsExpander x:Name="encryptMethodSettingsCard"
+                                            x:Uid="encryptMethodSettingsCardUid"
                                             VerticalAlignment="Top"
                                             Description="Choose the preferred encription method."
                                             Header="Encription Method"
@@ -78,6 +79,7 @@
                         </local:SettingsExpander.Items>
                     </local:SettingsExpander>
                     <local:SettingsExpander x:Name="encryptSavePathSettingsCard"
+                                            x:Uid="encryptSavePathSettingsCardUid"
                                             VerticalAlignment="Top"
                                             Description="Choose the folder that will save the files."
                                             Header="Save in target folder"
@@ -91,7 +93,8 @@
                             <local:SettingsCard Header="Choose Save Path"
                                                 Description="Folder not selected. "
                                                 IsEnabled="False"
-                                                x:Name="SavePathSettingCard">
+                                                x:Name="SavePathSettingCard"
+                                                x:Uid="SavePathSettingCardUid">
                                 <Button x:Name="ChooseSavePathFolder" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
@@ -103,23 +106,26 @@
                         </local:SettingsExpander.Items>
                     </local:SettingsExpander>
                     <local:SettingsCard Description="This file can only decrypt in this deivce."
-                            Header="This device only"
+                                        Header="This device only"
+                                        x:Uid="EncryptPage_ThisDeviceOnly_Uid"
                             HeaderIcon="{ui:FontIcon Glyph=&#xEC4E;}">
                         <ToggleSwitch />
                     </local:SettingsCard>
 
                     <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
-                                 Header="Keep original files"
-                                 HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
+                                        Header="Keep original files"
+                                        x:Uid="KeepOriginalFilesSettingCardUID"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xF413;}">
                         <ToggleSwitch x:Name="keepOriginalFile" IsOn="True" Toggled="keepOriginalFile_Toggled" />
                     </local:SettingsCard>
 
                     <local:SettingsCard x:Name="psdSettingCard"
-Description="Set Password for all files"
-Header="Password"
-HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
+                                        Description="Set Password for all files"
+                                        Header="Password"
+                                        x:Uid="EncryptPage_PasswordSettingCard_Uid"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
 
-                        <PasswordBox x:Name="FilePsdBox" Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
+                        <PasswordBox x:Name="FilePsdBox" x:Uid="EncryptPage_FilePsdBox_PsdBox" Width="300" PlaceholderText="Enter your password" PasswordChar="*" />
 
                     </local:SettingsCard>
 
@@ -143,7 +149,8 @@ HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
                     </Grid.ColumnDefinitions>
 
                     <TextBlock>
-                 <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}">
+                 <Run Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                      x:Uid="SelectedEncryptFilesTitle">
                      Selected Files: </Run>
                  <LineBreak/>
                  <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
@@ -153,6 +160,7 @@ HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}">
                             x:Name="EncryptRun"
                             Style="{StaticResource AccentButtonStyle}" 
                             Content="Execute"
+                            x:Uid="EncryptRun_Btn"
                             Click="EncryptRun_Click"/>
                 </Grid>
                 

@@ -243,4 +243,46 @@
   <data name="BrowseAndAllFilesBtn_Btn.Content" xml:space="preserve">
     <value>Browse and add files</value>
   </data>
+  <data name="encryptMethodSettingsCardUid.Header" xml:space="preserve">
+    <value>Encription Method</value>
+  </data>
+  <data name="encryptMethodSettingsCardUid.Description" xml:space="preserve">
+    <value>Choose the preferred encription method.</value>
+  </data>
+  <data name="encryptSavePathSettingsCardUid.Header" xml:space="preserve">
+    <value>Save in target folder</value>
+  </data>
+  <data name="encryptSavePathSettingsCardUid.Description" xml:space="preserve">
+    <value>Choose the folder that will save the files.</value>
+  </data>
+  <data name="SavePathSettingCardUid.Header" xml:space="preserve">
+    <value>Choose Save Path</value>
+  </data>
+  <data name="EncryptPage_ThisDeviceOnly_Uid.Header" xml:space="preserve">
+    <value>This device only</value>
+  </data>
+  <data name="EncryptPage_ThisDeviceOnly_Uid.Description" xml:space="preserve">
+    <value>This file can only decrypt in this deivce.</value>
+  </data>
+  <data name="KeepOriginalFilesSettingCardUID.Header" xml:space="preserve">
+    <value>Keep original files</value>
+  </data>
+  <data name="KeepOriginalFilesSettingCardUID.Description" xml:space="preserve">
+    <value>Selecting this option would make a copy of encrypted target files.</value>
+  </data>
+  <data name="EncryptPage_PasswordSettingCard_Uid.Header" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="EncryptPage_PasswordSettingCard_Uid.Description" xml:space="preserve">
+    <value>Set Password for all files</value>
+  </data>
+  <data name="EncryptPage_FilePsdBox_PsdBox.PlaceholderText" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="EncryptRun_Btn.Content" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="SelectedEncryptFilesTitle.Text" xml:space="preserve">
+    <value>Selected Files: </value>
+  </data>
 </root>
