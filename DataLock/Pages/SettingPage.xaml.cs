@@ -39,6 +39,9 @@ namespace DataLock.Pages
                                        // 4: NotConfiguredForUser,
                                        // -1: NotAvailable
         private bool hello_auth_result = false;
+        private string language = "auto";
+        private bool first_time = true;
+        private bool systemChangeLan = false;
         public SettingPage()
         {
             this.InitializeComponent();
@@ -49,6 +52,7 @@ namespace DataLock.Pages
         private async Task InitializeAsync()
         {
             hello_result = await CheckBiometricSupport();
+            LoadSetting();
             InitUI();
         }
 
@@ -101,6 +105,27 @@ namespace DataLock.Pages
             else
             {
                 SetupSoftwarePassword.Content = setupPasswordMsg;
+            }
+
+            systemChangeLan = true;
+            // Set the language based on the saved setting
+            if (language == "auto")
+            {
+                // Set the combobox to system default language
+                SelectLanguage.SelectedItem = SelectLanguage.Items[0];
+            }
+            else
+            {
+                // Set the combobox to the selected language
+                for (int i = 0; i < SelectLanguage.Items.Count; i++)
+                {
+                    var item = SelectLanguage.Items[i] as ComboBoxItem;
+                    if (item != null && item.Tag.ToString() == language)
+                    {
+                        SelectLanguage.SelectedIndex = i;
+                        break;
+                    }
+                }
             }
         }
 
@@ -171,7 +196,7 @@ namespace DataLock.Pages
 
         private void LoadSetting()
         {
-            
+            language = SettingManager.Language;
         }
 
         private string GetAppVersion()
@@ -179,6 +204,36 @@ namespace DataLock.Pages
             // 获取应用程序的Assembly版本信息
             var version = Package.Current.Id.Version;
             return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        }
+
+        // Display Information
+        private bool isDialogOpen = false;
+
+        private async Task<ContentDialogResult> ShowDialog(string title, string btn1, string btn2 = "", string closebtn = "Cancel", ContentDialogButton DefaultButton = ContentDialogButton.Primary, string content = "")
+        {
+            if (isDialogOpen) return ContentDialogResult.None; // 防止重复显示
+            isDialogOpen = true;
+
+            try
+            {
+                ContentDialog dialog = new ContentDialog
+                {
+                    XamlRoot = this.XamlRoot,
+                    Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                    Title = title,
+                    PrimaryButtonText = btn1,
+                    SecondaryButtonText = string.IsNullOrEmpty(btn2) ? null : btn2,
+                    CloseButtonText = closebtn,
+                    DefaultButton = DefaultButton,
+                    Content = content
+                };
+
+                return await dialog.ShowAsync();
+            }
+            finally
+            {
+                isDialogOpen = false;
+            }
         }
 
         private async void SetupSoftwarePassword_Click(object sender, RoutedEventArgs e)
@@ -262,8 +317,15 @@ namespace DataLock.Pages
             }
         }
 
-        private void SelectLanguage_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SelectLanguage_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Check if it is the first time
+            if (first_time)
+            {
+                first_time = false;
+                return;
+            }
+
             // Set the language based on the selected item
             var selectedLanguage = (sender as ComboBox).SelectedItem as ComboBoxItem;
             if (selectedLanguage != null)
@@ -282,7 +344,19 @@ namespace DataLock.Pages
                 SettingManager.Language = language;
                 //Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = language;
                 // Reload the page to apply the new language
-                App.m_window.GoToPage("Settings", new DrillInNavigationTransitionInfo());
+                //App.m_window.GoToPage("Settings", new DrillInNavigationTransitionInfo());
+                // Show a message to inform the user
+                if (systemChangeLan)
+                {
+                    systemChangeLan = false;
+                    return;
+                }
+                var loader = new ResourceLoader();
+                string languageChangedMsg = loader.GetString("LanguageChanged");
+                string dialog_ok = loader.GetString("DialogOK");
+                string dialog_cancel = loader.GetString("DialogCancel");
+                string restartRequire = loader.GetString("RestartRequireMsg");
+                await ShowDialog(languageChangedMsg, dialog_ok, btn2: "", closebtn: "", ContentDialogButton.Primary, restartRequire);
             }
         }
     }

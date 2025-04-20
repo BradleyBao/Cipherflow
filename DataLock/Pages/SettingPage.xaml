@@ -36,7 +36,7 @@
                     <win:EntranceThemeTransition FromVerticalOffset="50" />
                     <win:RepositionThemeTransition IsStaggeringEnabled="False" />
                 </win:StackPanel.ChildrenTransitions>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Settings</TextBlock>
+                <TextBlock x:Uid="SettingPage_Title" Style="{StaticResource TitleTextBlockStyle}">Settings</TextBlock>
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="SettingPage_General_Title"
                            Text="General" />
@@ -96,7 +96,7 @@
                 </controls:SettingsCard>-->
 
                 <!--  Example 'About' section  -->
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                <TextBlock x:Uid="SettingPage_About_Title" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="About" />
 
                 <controls:SettingsCard Description="© 2025. All rights reserved."

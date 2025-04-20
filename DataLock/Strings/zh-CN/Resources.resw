@@ -219,4 +219,28 @@
   <data name="UnsetPasswordError_WrongPassword" xml:space="preserve">
     <value>密码错误</value>
   </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>更改语言</value>
+  </data>
+  <data name="RestartRequireMsg" xml:space="preserve">
+    <value>需要重启应用</value>
+  </data>
+  <data name="SettingPage_Title.Text" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="SettingPage_About_Title.Text" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="EncryptPage_Title.Text" xml:space="preserve">
+    <value>加密</value>
+  </data>
+  <data name="EncryptPage_Upload_Des.Text" xml:space="preserve">
+    <value>拖拽来添加文件或文件夹</value>
+  </data>
+  <data name="EncryptPage_Upload_Des_Long.Text" xml:space="preserve">
+    <value>从文件资源管理器或桌面拖动文件并将其放置在此处以添加到加密列表中。</value>
+  </data>
+  <data name="BrowseAndAllFilesBtn_Btn.Content" xml:space="preserve">
+    <value>浏览并添加文件</value>
+  </data>
 </root>

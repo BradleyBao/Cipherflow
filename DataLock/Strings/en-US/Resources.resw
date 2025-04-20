@@ -219,4 +219,28 @@
   <data name="UnsetPasswordError_WrongPassword" xml:space="preserve">
     <value>Wrong Password</value>
   </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>Language Changed</value>
+  </data>
+  <data name="RestartRequireMsg" xml:space="preserve">
+    <value>Restarting the software is required.</value>
+  </data>
+  <data name="SettingPage_Title.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingPage_About_Title.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="EncryptPage_Title.Text" xml:space="preserve">
+    <value>Encrypt</value>
+  </data>
+  <data name="EncryptPage_Upload_Des.Text" xml:space="preserve">
+    <value>Drag and drop to add files/folders</value>
+  </data>
+  <data name="EncryptPage_Upload_Des_Long.Text" xml:space="preserve">
+    <value>Drag files from File Explorer or your desktop and drop them here to add files to the encryption list.</value>
+  </data>
+  <data name="BrowseAndAllFilesBtn_Btn.Content" xml:space="preserve">
+    <value>Browse and add files</value>
+  </data>
 </root>

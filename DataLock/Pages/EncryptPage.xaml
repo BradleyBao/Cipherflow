@@ -20,7 +20,7 @@
                         <win:RepositionThemeTransition IsStaggeringEnabled="False" />
                     </TransitionCollection>
                 </win:StackPanel.ChildrenTransitions>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Encrypt</TextBlock>
+                <TextBlock x:Uid="EncryptPage_Title" Style="{StaticResource TitleTextBlockStyle}">Encrypt</TextBlock>
                 <!--信息提示条-->
                 <InfoBar 
          Title="Fonts Control Panel is being redirected here." 
@@ -43,10 +43,10 @@
                  DragLeave="UploadBanner_DragLeave">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
                         <FontIcon Glyph="&#xE710;" FontSize="36" />
-                        <TextBlock Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
-                        <TextBlock Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
+                        <TextBlock x:Uid="EncryptPage_Upload_Des" Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock x:Uid="EncryptPage_Upload_Des_Long" Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
                         TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
-                        <Button HorizontalAlignment="Center" Content="Browse and add files" />
+                        <Button x:Name="BrowseAndAllFilesBtn" x:Uid="BrowseAndAllFilesBtn_Btn" HorizontalAlignment="Center" Content="Browse and add files" />
                     </StackPanel>
                 </Border>
 
@@ -57,7 +57,7 @@
                                             Header="Encription Method"
                                             HorizontalAlignment="Stretch"
                                             Width="Auto"
-             HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
                         <ComboBox SelectedIndex="0" x:Name="SelectEncryptionAlgorithmBox">
                             <ComboBoxItem>AES-GCM</ComboBoxItem>
