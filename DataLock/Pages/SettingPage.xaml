@@ -38,41 +38,50 @@
                 </win:StackPanel.ChildrenTransitions>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Settings</TextBlock>
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="SettingPage_General_Title"
                            Text="General" />
                 
 
                 <controls:SettingsCard Description="Choose the display language. "
-                       Header="App Language"
-                       HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
-                    <ComboBox SelectedIndex="0">
-                        <ComboBoxItem>Auto</ComboBoxItem>
-                        <ComboBoxItem>English</ComboBoxItem>
-                        <ComboBoxItem>Chinese</ComboBoxItem>
+                                       Header="App Language"
+                                       x:Uid="SettingPage_Dispay_Langauge_Title"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                    <ComboBox x:Name="SelectLanguage" SelectionChanged="SelectLanguage_SelectionChanged" SelectedIndex="0">
+                        <ComboBoxItem Tag="auto">Auto</ComboBoxItem>
+                        <ComboBoxItem Tag="en-US">English</ComboBoxItem>
+                        <ComboBoxItem Tag="zh-CN">中文</ComboBoxItem>
                     </ComboBox>
                 </controls:SettingsCard>
 
                 
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="SettingPage_Security_Title"
                            Text="Security" />
 
                 <controls:SettingsCard x:Name="software_pin_setting"
-                       Description="Setup password for this software. "
-                       Header="Password"
-                       HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}"
-                       IsClickEnabled="False">
-                    <Button Content="Set" />
+                                       Description="Setup password for this software. "
+                                       Header="Password"
+                                       x:Uid="SettingPage_Software_Password_Title"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE75F;}"
+                                       IsClickEnabled="False">
+                    <Button x:Name="SetupSoftwarePassword" 
+                            Content="Set" 
+                            x:Uid="SetPasswordBtn"
+                            Click="SetupSoftwarePassword_Click" />
                 </controls:SettingsCard>
 
                 <controls:SettingsExpander Description="Setup Multi-factor authentication."
-                           Header="MFA"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE83D;}">
+                                           Header="MFA"
+                                           x:Uid="SettingPage_MFA_Title"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE83D;}">
                     <ToggleSwitch IsOn="False" />
 
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard x:Name="windows_hello_setting"
                                                Description="Use Windows Hello (Pin, Fingerprint, Face Recognition) as MFA. "
                                                Header="Windows Hello"
+                                               x:Uid="SettingPage_Windows_Hello_Title"
                                                HeaderIcon="{ui:FontIcon Glyph=&#xEB68;}"
                                                IsClickEnabled="False">
                             <Button x:Name="setupWindowsHello" Content="Set" Click="SetupWindowsHello_Click" />
@@ -80,34 +89,24 @@
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
-                <controls:SettingsCard Description="Another card to show grouping of cards"
+                <!--<controls:SettingsCard Description="Another card to show grouping of cards"
                                        Header="Yet another SettingsCard"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE768;}">
                     <Button Content="Content" />
-                </controls:SettingsCard>
+                </controls:SettingsCard>-->
 
                 <!--  Example 'About' section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="About" />
 
-                <controls:SettingsExpander Description="© 2023. All rights reserved."
-                                           Header="Community Toolkit Gallery"
-                                           HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/AppTitleBar.scale-200.png}">
+                <controls:SettingsCard Description="© 2025. All rights reserved."
+                                           Header="Cipherflow"
+                                           HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/CipherflowLogo.png}">
                     <TextBlock win:IsTextSelectionEnabled="True"
+                               x:Name="version_number"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Text="Version 8.0.0" />
-                    <controls:SettingsExpander.Items>
-                        <controls:SettingsCard HorizontalContentAlignment="Left"
-                                               ContentAlignment="Left">
-                            <StackPanel Margin="-12,0,0,0"
-                                        Orientation="Vertical">
-                                <HyperlinkButton Content="Link 1" />
-                                <HyperlinkButton Content="Link 2" />
-                                <HyperlinkButton Content="Link 3" />
-                            </StackPanel>
-                        </controls:SettingsCard>
-                    </controls:SettingsExpander.Items>
-                </controls:SettingsExpander>
+                               Text="Version 1.0.0" />
+                </controls:SettingsCard>
                 <HyperlinkButton Margin="0,8,0,0"
                                  Content="Send feedback" />
             </StackPanel>

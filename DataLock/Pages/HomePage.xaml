@@ -32,7 +32,9 @@
 
             <StackPanel MaxWidth="1100" HorizontalAlignment="Stretch">
                 <!--<TextBlock Grid.Row="0" Text="Home" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,24"/>-->
-                <TextBlock x:Name="AppNameWelcome" Text="Ciperflow " Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock x:Name="AppNameWelcome" 
+                           x:Uid="AppName"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
                 <Grid Grid.Row="1" Margin="0,0,0,24">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -71,9 +73,12 @@
 
                     <StackPanel Grid.Column="0" Spacing="24">
                         <StackPanel Spacing="4">
-                            <TextBlock Margin="5 20" Text="Cryptography Page" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock Margin="5 20"
+                                       x:Uid="Homepage_Crypt_Title"
+                                       Style="{StaticResource SubtitleTextBlockStyle}"/>
                             <local:SettingsCard x:Name="cryptography_encryptPage"
                                                 Description="Encrypt files using various algorithms."
+                                                x:Uid="Homepage_Encrypt_Title"
                                                 Click="cryptography_encryptPage_Click"
                                                 Header="Encryption Page"
                                                 HeaderIcon="{ui:FontIcon Glyph=&#xE72E;}"
@@ -82,6 +87,7 @@
                        Text="This is content" />-->
                             </local:SettingsCard>
                             <local:SettingsCard x:Name="cryptography_decryptPage"
+                                                x:Uid="Homepage_Decrypt_Title"
                                                 Description="Decrypt files using various algorithms."
                                                 Click="cryptography_decryptPage_Click"
                                                 Header="Decryption Page"
@@ -91,56 +97,6 @@
 Text="This is content" />-->
                             </local:SettingsCard>
                         </StackPanel>
-
-                        <!--<StackPanel Spacing="8">
-                            <TextBlock Text="Bluetooth devices" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Text="Manage, add, and remove devices" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,0,0,8"/>
-                            <Grid ColumnSpacing="12" Padding="12" Background="{ThemeResource LayerOnMicaBaseAltFillColorSecondary}" CornerRadius="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0" Glyph="&#xE702;" VerticalAlignment="Center"/>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Bluetooth"/>
-                                    <TextBlock Text="Discoverable as 'BRAD'" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                </StackPanel>
-                                <TextBlock Grid.Column="2" Text="On" Margin="0,0,8,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                <ToggleSwitch Grid.Column="3" IsOn="True" VerticalAlignment="Center" MinWidth="0" HorizontalAlignment="Right"/>
-                            </Grid>
-                            <Grid ColumnSpacing="12" Padding="12" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0" Glyph="&#xEADF;" VerticalAlignment="Center"/>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="FIIO Key Pro"/>
-                                    <TextBlock Text="Not connected" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                </StackPanel>
-                                <Button Grid.Column="2" Content="Connect" MinWidth="80" VerticalAlignment="Center"/>
-                                <Button Grid.Column="3" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Margin="4,0,0,0">
-                                    <FontIcon Glyph="&#xE712;" FontSize="16"/>
-                                </Button>
-                            </Grid>
-                            <Grid Padding="12" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <HyperlinkButton Grid.Column="0" Content="View all devices" VerticalAlignment="Center" Padding="0"/>
-                                <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE710;" FontSize="16"/>
-                                        <TextBlock Text="Add device"/>
-                                    </StackPanel>
-                                </Button>
-                            </Grid>
-                        </StackPanel>-->
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Spacing="24">
@@ -148,12 +104,22 @@ Text="This is content" />-->
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <!--Font Icon change via status-->
                                 <FontIcon Glyph="&#xE7BA;" FontSize="20" VerticalAlignment="Center"/>
-                                <TextBlock Text="Security Setting" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="Security Setting" 
+                                           x:Uid="Homepage_Security_Title"
+                                           Style="{StaticResource SubtitleTextBlockStyle}" 
+                                           VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBlock Text="Some settings are not configured. " TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="Some settings are not configured. " 
+                                       x:Name="security_setting_status"
+                                       TextWrapping="Wrap" 
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             <ProgressBar Value="80" Margin="0,8,0,4"/>
                             <TextBlock Text="4 out of 5 settings" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <Button Content="Configure" Margin="0,8,0,0"/>
+                            <Button x:Name="configureSetting" 
+                                    Click="configureSetting_Click"
+                                    x:Uid="HomePage_Configure_Setting_Btn" 
+                                    Content="Configure" 
+                                    Margin="0,8,0,0"/>
                         </StackPanel>
 
                         <StackPanel Spacing="4" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
@@ -178,22 +144,9 @@ Text="This is content" />-->
                                                 IsClickEnabled="True">
                             </local:SettingsCard>
                         </StackPanel>
-
-                        <!--<StackPanel Spacing="8" Padding="16" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <FontIcon Glyph="&#xE73E;" FontSize="20" VerticalAlignment="Center" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                <TextBlock Text="Never lose access to your account" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <TextBlock Text="Add a recovery phone number to make sure you can always get in to your account." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <Button Content="Add now" Style="{StaticResource AccentButtonStyle}" Margin="0,8,0,0"/>
-                        </StackPanel>-->
-
                     </StackPanel>
-
                 </Grid>
             </StackPanel>
-            
-
         </Grid>
     </ScrollViewer>
 </Page>

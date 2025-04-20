@@ -55,18 +55,21 @@
                             IsTabStop="False">      
 
                 <NavigationView.MenuItems>
-                    <NavigationViewItem Content="Home" Tag="Home" x:Name="HomePageNav">
+                    <NavigationViewItem Content="Home" Tag="Home" x:Name="HomePageNav" x:Uid="NavHomepage">
                         <NavigationViewItem.Icon>
                             <SymbolIcon Symbol="Home" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItemHeader Content="Cryptography"/>
+                    <NavigationViewItemHeader x:Uid="NavCryptography" Content="Cryptography"/>
                     <!--<NavigationViewItem Content="Dynamic Lock" Tag="DynamicsLock" x:Name="DynamicsLockNav" SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>-->
-                    <NavigationViewItem Content="Encrypt" ToolTipService.ToolTip="Converting plaintext into ciphertext. " Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
+                    <NavigationViewItem Content="Encrypt" 
+                                        x:Uid="NavEncrypt"
+                                        ToolTipService.ToolTip="Converting plaintext into ciphertext. " 
+                                        Tag="Encrypt" x:Name="EncryptNav" SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xE72E;" />
                         </NavigationViewItem.Icon>
@@ -74,13 +77,22 @@
                             <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIY"/>
                         </NavigationViewItem.MenuItems>-->
                     </NavigationViewItem>
-                    <NavigationViewItem Content="Decrypt" Tag="Decrypt" ToolTipService.ToolTip="Converting ciphertext into plaintext. " x:Name="DecryptNav" SelectsOnInvoked="True">
+                    <NavigationViewItem Content="Decrypt" 
+                                        Tag="Decrypt" 
+                                        x:Uid="NavDecrypt"
+                                        ToolTipService.ToolTip="Converting ciphertext into plaintext. " 
+                                        x:Name="DecryptNav" 
+                                        SelectsOnInvoked="True">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xE785;" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <NavigationViewItemHeader Content="Customize"/>
-                    <NavigationViewItem Content="DIY" ToolTipService.ToolTip="Create your own encription flow" Tag="EncryptDIYNav" x:Name="EncryptDIY">
+                    <NavigationViewItem Content="DIY" 
+                                        ToolTipService.ToolTip="Create your own encription flow" 
+                                        Tag="EncryptDIYNav" 
+                                        x:Uid="NavDIY"
+                                        x:Name="EncryptDIY">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xF439;" />
                         </NavigationViewItem.Icon>

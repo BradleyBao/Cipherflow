@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using DataLock.Functions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -41,6 +42,17 @@ namespace DataLock
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            string language = SettingManager.Language;
+            if (language == "auto")
+            {
+                // Get the system default language
+                language = Windows.Globalization.ApplicationLanguages.Languages[0];
+            }
+            else
+            {
+                //language = language.Replace("-", "_");
+            }
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = language;
             m_window = new MainWindow();
             m_window.Activate();
         }
