@@ -170,7 +170,13 @@ namespace DataLock.Pages
         private async Task<ContentDialogResult> ShowDialog(string title, string btn1, string btn2 = "", string closebtn = "Cancel", ContentDialogButton DefaultButton = ContentDialogButton.Primary, string content = "")
         {
             if (isDialogOpen) return ContentDialogResult.None; // 防止重复显示
+            var loader = new ResourceLoader();
             isDialogOpen = true;
+
+            if (closebtn.Equals("Cancel"))
+            {
+                closebtn = loader.GetString("DialogCancel");
+            }
 
             try
             {
@@ -322,9 +328,15 @@ namespace DataLock.Pages
             }
 
             await Task.WhenAll(tasks);
-
             UnlockPage();
-            ContentDialogResult result_from_dialog = await ShowDialog("Encryption Complete", "OK", content: $"{total} file(s) have been encrypted.\nOpen Folder?");
+
+            var loader = new ResourceLoader();
+            string encryption_complete_title = loader.GetString("EncryptionCompleteDialogTitle");
+            string dialogOK = loader.GetString("DialogOK");
+            string encryption_complete_content = loader.GetString("EncryptionCompleteDialogContent");
+            string open_folder = loader.GetString("OpenFolder");
+
+            ContentDialogResult result_from_dialog = await ShowDialog(encryption_complete_title, dialogOK, content: $"{total} {encryption_complete_content}\n{open_folder}");
 
             // if user clicks "OK" button
             if (result_from_dialog == ContentDialogResult.Primary)

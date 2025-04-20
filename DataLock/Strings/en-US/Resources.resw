@@ -339,4 +339,22 @@
   <data name="UnderDevelopmentContent" xml:space="preserve">
     <value>Some functions are still under development. </value>
   </data>
+  <data name="EncryptionCompleteDialogTitle" xml:space="preserve">
+    <value>Encryption Complete</value>
+  </data>
+  <data name="EncryptionCompleteDialogContent" xml:space="preserve">
+    <value>file(s) have been encrypted.</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>Open Folder? </value>
+  </data>
+  <data name="DecryptionCompleteDialogTitle" xml:space="preserve">
+    <value>Decryption Complete</value>
+  </data>
+  <data name="DecryptionErrorTimeContent" xml:space="preserve">
+    <value>files failed to decrypt. </value>
+  </data>
+  <data name="DecryptionCompleteDialogContent" xml:space="preserve">
+    <value>file(s) have been decrypted.</value>
+  </data>
 </root>

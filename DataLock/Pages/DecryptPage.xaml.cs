@@ -68,7 +68,13 @@ namespace DataLock.Pages
         private async Task<ContentDialogResult> ShowDialog(string title, string btn1, string btn2 = "", string closebtn = "Cancel", ContentDialogButton DefaultButton = ContentDialogButton.Primary, string content = "")
         {
             if (isDialogOpen) return ContentDialogResult.None; // 防止重复显示
+            var loader = new ResourceLoader();
             isDialogOpen = true;
+
+            if (closebtn.Equals("Cancel"))
+            {
+                closebtn = loader.GetString("DialogCancel");
+            }
 
             try
             {
@@ -209,7 +215,14 @@ namespace DataLock.Pages
                 DecryptProgress.ShowError = false;
             }
 
-            ContentDialogResult result_from_dialog = await ShowDialog("Decryption Complete", "OK", content: $"{complete_files} files decrypted. {error_time} failed. Open Folder?");
+            var loader = new ResourceLoader();
+            string decryption_complete_title = loader.GetString("DecryptionCompleteDialogTitle");
+            string dialogOK = loader.GetString("DialogOK");
+            string decryption_complete_content = loader.GetString("DecryptionCompleteDialogContent");
+            string error_time_content = loader.GetString("DecryptionErrorTimeContent");
+            string open_folder = loader.GetString("OpenFolder");
+
+            ContentDialogResult result_from_dialog = await ShowDialog(decryption_complete_title, dialogOK, content: $"{complete_files} {decryption_complete_content} {error_time} {error_time_content} \n{open_folder}");
 
             // if user clicks "OK" button
             if (result_from_dialog == ContentDialogResult.Primary)

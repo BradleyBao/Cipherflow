@@ -339,4 +339,22 @@
   <data name="UnderDevelopmentContent" xml:space="preserve">
     <value>一些功能仍在开发中</value>
   </data>
+  <data name="EncryptionCompleteDialogTitle" xml:space="preserve">
+    <value>加密完成</value>
+  </data>
+  <data name="EncryptionCompleteDialogContent" xml:space="preserve">
+    <value>个文件已被加密</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>是否打开文件夹？</value>
+  </data>
+  <data name="DecryptionCompleteDialogTitle" xml:space="preserve">
+    <value>解密完成</value>
+  </data>
+  <data name="DecryptionErrorTimeContent" xml:space="preserve">
+    <value>个文件无法解密</value>
+  </data>
+  <data name="DecryptionCompleteDialogContent" xml:space="preserve">
+    <value>个文件已被解密</value>
+  </data>
 </root>
