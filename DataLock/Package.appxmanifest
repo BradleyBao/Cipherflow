@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="22ac23c6-db87-4957-a3f3-26d9f56eb83f"
-    Publisher="CN=17765"
+    Name="TianYi.Encrafter"
+    Publisher="CN=98419A6D-1B04-4EA1-8658-1B5D9D2D15EA"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="22ac23c6-db87-4957-a3f3-26d9f56eb83f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="c98d31aa-704d-4694-8251-ef28d1852911" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>DataLock</DisplayName>
-    <PublisherDisplayName>17765</PublisherDisplayName>
+    <DisplayName>Cipherflow</DisplayName>
+    <PublisherDisplayName>Tian Yi</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
