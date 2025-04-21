@@ -396,5 +396,59 @@ namespace DataLock.Pages
 
             ChooseSavePathFolder.IsEnabled = true; // Re-enable the button
         }
+
+        private async void DeBrowseAndAllFilesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable the button to prevent multiple clicks
+            Button senderButton = (Button)sender;
+            senderButton.IsEnabled = false;
+
+            // Create a file picker
+            var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
+
+            // See the sample code below for how to make the window accessible from the App class.
+            var window = App.m_window;
+
+            // Retrieve the window handle (HWND) of the current WinUI 3 window.
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+            // Initialize the file picker with the window handle (HWND).
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+            // Set options for your file picker
+            openPicker.ViewMode = PickerViewMode.List;
+            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            openPicker.FileTypeFilter.Add("*");
+
+            // Open the picker for the user to pick a file
+            IReadOnlyList<StorageFile> files = await openPicker.PickMultipleFilesAsync();
+            if (files.Count > 0)
+            {
+                foreach (var item in files)
+                {
+                    if (item is Windows.Storage.StorageFile file)
+                    {
+                        // Fix: Retrieve file size using GetBasicPropertiesAsync
+                        var basicProperties = file.GetBasicPropertiesAsync().GetAwaiter().GetResult();
+                        long fileSize = (long)basicProperties.Size;
+
+                        string fileName = file.Name;
+                        string filePath = file.Path;
+                        string fileType = file.FileType;
+                        DateTime createdDate = file.DateCreated.DateTime;
+                        DateTime modifiedDate = DateTime.Now; // Assume upload time as modified date
+                        FileList.Add(new Modules.File(fileName, createdDate, fileType, fileSize, filePath));
+                    }
+                }
+                UpdateList();
+            }
+            else
+            {
+
+            }
+
+            //re-enable the button
+            senderButton.IsEnabled = true;
+        }
     }
 }

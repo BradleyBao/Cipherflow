@@ -44,7 +44,11 @@
                         <TextBlock x:Uid="EncryptPage_Upload_Des" Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
                         <TextBlock x:Uid="EncryptPage_Upload_Des_Long" Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
                         TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
-                        <Button x:Name="BrowseAndAllFilesBtn" x:Uid="BrowseAndAllFilesBtn_Btn" HorizontalAlignment="Center" Content="Browse and add files" />
+                        <Button x:Name="BrowseAndAllFilesBtn" 
+                                x:Uid="BrowseAndAllFilesBtn_Btn" 
+                                HorizontalAlignment="Center" 
+                                Click="BrowseAndAllFilesBtn_Click"
+                                Content="Browse and add files" />
                     </StackPanel>
                 </Border>
 
