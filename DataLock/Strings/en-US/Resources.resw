@@ -357,4 +357,22 @@
   <data name="DecryptionCompleteDialogContent" xml:space="preserve">
     <value>file(s) have been decrypted.</value>
   </data>
+  <data name="AES_GCM_Des_Header" xml:space="preserve">
+    <value>About AES-GCM</value>
+  </data>
+  <data name="AES_GCM_Des_Des" xml:space="preserve">
+    <value>Learn more about AES-GCM Algorithm</value>
+  </data>
+  <data name="ChaCha20_Des_Header" xml:space="preserve">
+    <value>About ChaCha20-Poly1305</value>
+  </data>
+  <data name="ChaCha20_Des_Des" xml:space="preserve">
+    <value>Learn more about ChaCha20-Poly1305 Algorithm</value>
+  </data>
+  <data name="ChaCha20_Des_Link" xml:space="preserve">
+    <value>https://en.wikipedia.org/wiki/ChaCha20-Poly1305</value>
+  </data>
+  <data name="AES_GCM_Des_Link" xml:space="preserve">
+    <value>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</value>
+  </data>
 </root>

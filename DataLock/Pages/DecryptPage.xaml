@@ -62,17 +62,20 @@
                                             Width="Auto"
              HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
-                        <ComboBox SelectedIndex="0" x:Name="SelectDecryptionAlgorithmBox">
+                        <ComboBox SelectedIndex="0" x:Name="SelectDecryptionAlgorithmBox" SelectionChanged="SelectDecryptionAlgorithmBox_SelectionChanged">
                             <ComboBoxItem>AES-GCM</ComboBoxItem>
-                            <!--<ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
-                            <ComboBoxItem>RSA + AES</ComboBoxItem>-->
+                            <ComboBoxItem>ChaCha20-Poly1305</ComboBoxItem>
+                            <!--<ComboBoxItem>RSA + AES</ComboBoxItem>-->
                         </ComboBox>
 
                         <local:SettingsExpander.Items>
                             <local:SettingsCard Description="This is decryption method is...."
-                                         Header="What is "
-                                         IsClickEnabled="True"
-                                         Width="Auto"/>
+                                                Header="What is "
+                                                ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}"
+                                                IsClickEnabled="True"
+                                                x:Name="AlgorithmDescryption"
+                                                Click="AlgorithmDescryption_Click"
+                                                Width="Auto"/>
 
                             <!--<local:SettingsCard ContentAlignment="Left">
          <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons." />

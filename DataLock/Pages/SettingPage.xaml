@@ -108,8 +108,8 @@
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Text="Version 1.0.0" />
                 </controls:SettingsCard>
-                <HyperlinkButton Margin="0,8,0,0"
-                                 Content="Send feedback" />
+                <!--<HyperlinkButton Margin="0,8,0,0"
+                                 Content="Send feedback" />-->
             </StackPanel>
         </Grid>
     </ScrollViewer>

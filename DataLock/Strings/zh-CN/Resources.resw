@@ -357,4 +357,22 @@
   <data name="DecryptionCompleteDialogContent" xml:space="preserve">
     <value>个文件已被解密</value>
   </data>
+  <data name="AES_GCM_Des_Header" xml:space="preserve">
+    <value>什么是AES-GCM</value>
+  </data>
+  <data name="AES_GCM_Des_Des" xml:space="preserve">
+    <value>了解更多关于AES-GCM算法</value>
+  </data>
+  <data name="ChaCha20_Des_Header" xml:space="preserve">
+    <value>什么是ChaCha20-Poly1305</value>
+  </data>
+  <data name="ChaCha20_Des_Des" xml:space="preserve">
+    <value>了解跟多关于ChaCha20-Poly1305算法</value>
+  </data>
+  <data name="ChaCha20_Des_Link" xml:space="preserve">
+    <value>https://zh.wikipedia.org/wiki/ChaCha20-Poly1305</value>
+  </data>
+  <data name="AES_GCM_Des_Link" xml:space="preserve">
+    <value>https://zh.wikipedia.org/wiki/%E9%AB%98%E7%BA%A7%E5%8A%A0%E5%AF%86%E6%A0%87%E5%87%86</value>
+  </data>
 </root>

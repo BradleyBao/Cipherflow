@@ -45,6 +45,8 @@ namespace DataLock.Pages
         public string targetPath = string.Empty;
         private bool isSaveInDifferentPathVar = false;
         private bool keepCurrentFile = false;
+        private string algorithm_link = "https://www.tianyibrad.com";
+        private bool first_time = true;
 
         public EncryptPage()
         {
@@ -63,6 +65,13 @@ namespace DataLock.Pages
             EncryptInfoBar.Severity = InfoBarSeverity.Warning;
             EncryptInfoBar.Title = news_title;
             EncryptInfoBar.Message = news_content;
+
+            // Set the default learn more algorithm
+            AlgorithmDescryption.Description = loader.GetString("AES_GCM_Des_Des");
+            AlgorithmDescryption.Header = loader.GetString("AES_GCM_Des_Header");
+            // Go to the link
+            algorithm_link = loader.GetString("AES_GCM_Des_Link");
+
         }
 
         private void LoadEncryptedFiles()
@@ -288,6 +297,7 @@ namespace DataLock.Pages
 
                             switch (algorithm_index)
                             {
+                                // AES-GCM
                                 case 0:
                                     if (string.IsNullOrEmpty(psd))
                                     {
@@ -296,13 +306,26 @@ namespace DataLock.Pages
                                     else
                                     {
                                         await Encrypt.AES_GCM_Encrypt(file_path, new_file_path, psd);
-                                        if (!keepCurrentFile)
-                                        {
-                                            System.IO.File.Delete(file_path); // Delete the original file if not keeping it
-                                        }
+                                    }
+                                    break;
+                                // ChaCha20-Poly1305
+                                case 1:
+                                    if (string.IsNullOrEmpty(psd))
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        await Encrypt.ChaCha20_Poly1305_Encrypt(file_path, new_file_path, psd);
                                     }
                                     break;
                             }
+
+                            if (!keepCurrentFile)
+                            {
+                                System.IO.File.Delete(file_path); // Delete the original file if not keeping it
+                            }
+
                         }
 
                         // Update Progress in UI Thread
@@ -452,6 +475,39 @@ namespace DataLock.Pages
 
             //re-enable the button
             senderButton.IsEnabled = true;
+        }
+
+        private void SelectEncryptionAlgorithmBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Check if it is the first time
+            if (first_time)
+            {
+                first_time = false;
+                return;
+            }
+            // Change the Header and Description of the Encryption Algorithm Card based on the selected algorithm
+            var loader = new ResourceLoader();
+            int algorithm_index = SelectEncryptionAlgorithmBox.SelectedIndex;
+            if (algorithm_index == 1)
+            {
+                AlgorithmDescryption.Description = loader.GetString("ChaCha20_Des_Des");
+                AlgorithmDescryption.Header = loader.GetString("ChaCha20_Des_Header");
+                // Go to the link
+                algorithm_link = loader.GetString("ChaCha20_Des_Link");
+            }
+            else if (algorithm_index == 0)
+            {
+                AlgorithmDescryption.Description = loader.GetString("AES_GCM_Des_Des");
+                AlgorithmDescryption.Header = loader.GetString("AES_GCM_Des_Header");
+                // Go to the link
+                algorithm_link = loader.GetString("AES_GCM_Des_Link");
+            }
+        }
+
+        private async void AlgorithmDescryption_Click(object sender, RoutedEventArgs e)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri(algorithm_link));
+
         }
     }
 }

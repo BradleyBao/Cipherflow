@@ -72,12 +72,44 @@ namespace DataLock.Functions
                 }
 
                 await File.WriteAllBytesAsync(outputFilePath, plaintext);
-                Console.WriteLine("✅ 文件解密成功！");
                 return true;
             }
             catch (CryptographicException)
             {
-                Console.WriteLine("❌ 解密失败！密码错误或文件已损坏。");
+                return false;
+            }
+        }
+
+        public static async Task<bool> ChaCha20_Poly1305_Decrypt(string encryptedFilePath, string outputFilePath, string password)
+        {
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
+            byte[] salt = new byte[16];
+            byte[] nonce = new byte[12];
+            byte[] tag = new byte[16];
+            // Create Ciphertext Bits minus metadata length
+            byte[] ciphertext = new byte[fileBytes.Length - 16 - 12 - 16];
+
+            // Divide the data and save it to the corresponding array
+            Array.Copy(fileBytes, 0, salt, 0, 16);
+            Array.Copy(fileBytes, 16, nonce, 0, 12);
+            Array.Copy(fileBytes, 28, tag, 0, 16);
+            Array.Copy(fileBytes, 44, ciphertext, 0, ciphertext.Length);
+
+            // Get key from password
+            byte[] key = DeriveKeyFromPassword(password, salt);
+            byte[] plaintext = new byte[ciphertext.Length];
+
+            try
+            {
+                using (var chacha = new ChaCha20Poly1305(key))
+                {
+                    chacha.Decrypt(nonce, ciphertext, tag, plaintext);
+                }
+                await File.WriteAllBytesAsync(outputFilePath, plaintext);
+                return true;
+            }
+            catch (CryptographicException)
+            {
                 return false;
             }
         }

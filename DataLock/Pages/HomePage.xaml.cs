@@ -122,10 +122,10 @@ namespace DataLock.Pages
         {
             // Set up Hello {username} text
             // Get the username from Windows credentials
-            string username = WindowsIdentity.GetCurrent().Name;
+            string username = System.Net.Dns.GetHostName();
             var loader = new ResourceLoader();
             string welcomeMsg = loader.GetString("WelcomeText");
-            WelcomeMsg.Text = welcomeMsg + " " + username.Split('\\')[1] + "!";
+            WelcomeMsg.Text = welcomeMsg + " " + username + "!";
 
             // Security Setting 
             int total_security = 2;
