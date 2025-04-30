@@ -423,4 +423,10 @@
   <data name="SetButtonSetting" xml:space="preserve">
     <value>Set</value>
   </data>
+  <data name="ChangeTempFolderHintTitle" xml:space="preserve">
+    <value>Temp Folder</value>
+  </data>
+  <data name="ChangeTempFolderHintBody" xml:space="preserve">
+    <value>It is strongly recommended to change the folder that stored temporary files. </value>
+  </data>
 </root>

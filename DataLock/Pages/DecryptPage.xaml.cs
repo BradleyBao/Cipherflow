@@ -56,11 +56,11 @@ namespace DataLock.Pages
         private void InitUI()
         {
             var loader = new ResourceLoader();
-            string news_title = loader.GetString("UnderDevelopmentTitle");
-            string news_content = loader.GetString("UnderDevelopmentContent");
+            string news_title = loader.GetString("ChangeTempFolderHintTitle");
+            string news_content = loader.GetString("ChangeTempFolderHintBody");
             // Set News
             DecryptInfoBar.IsOpen = true;
-            DecryptInfoBar.Severity = InfoBarSeverity.Warning;
+            DecryptInfoBar.Severity = InfoBarSeverity.Informational;
             DecryptInfoBar.Title = news_title;
             DecryptInfoBar.Message = news_content;
 

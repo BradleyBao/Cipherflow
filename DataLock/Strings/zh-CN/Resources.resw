@@ -423,4 +423,10 @@
   <data name="SetButtonSetting" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="ChangeTempFolderHintTitle" xml:space="preserve">
+    <value>临时文件存放</value>
+  </data>
+  <data name="ChangeTempFolderHintBody" xml:space="preserve">
+    <value>强烈建议更改存放临时文件的文件夹。</value>
+  </data>
 </root>
