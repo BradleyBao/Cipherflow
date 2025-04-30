@@ -24,6 +24,7 @@ using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using Microsoft.Windows.ApplicationModel.Resources;
+using System.IO.Compression;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -138,93 +139,209 @@ namespace DataLock.Pages
 
         public async void DecryptRun_Click(object sender, RoutedEventArgs e)
         {
-            // Check all conditions
+            // Check all conditions (assuming CheckAllCondition checks password, selection etc.)
             if (!await CheckAllCondition()) return;
-            LockDown();
+            LockDown(); // Disable UI elements
             DecryptProgress.Visibility = Visibility.Visible;
-
-            string psd = FilePsdBox.Password;
-            int algorithm_index = SelectDecryptionAlgorithmBox.SelectedIndex;
-            int num_of_files = DataList.Count;
-            int current_progress = 0;
-            int error_time = 0;
-            string new_file_path = "";
+            DecryptProgress.Value = 0;
             DecryptProgress.ShowPaused = false;
             DecryptProgress.ShowError = false;
 
+            string psd = FilePsdBox.Password;
+            int algorithm_index = SelectDecryptionAlgorithmBox.SelectedIndex;
+            int total = DataList.Count;
+            int completed = 0;
+            int error_count = 0; // Changed from error_time for clarity
+            string firstOutputPath = null; // To store path for "Open Folder"
+
             var tasks = new List<Task>();
+            // Use SemaphoreSlim for concurrency control, matching encryption
+            var throttler = new SemaphoreSlim(4); // Adjust concurrency level as needed
 
             foreach (var item in DataList)
             {
-                if (item is Modules.File file)
+                // This assumes item has properties like Path and Name, adapt if needed
+                string itemPath = item.Path; // Assuming item.Path holds the full path
+                string itemName = item.Name; // Assuming item.Name holds the file/folder name
+
+                if (string.IsNullOrEmpty(itemPath)) continue; // Skip invalid items
+
+                await throttler.WaitAsync(); // Wait for semaphore
+
+                var task = Task.Run(async () =>
                 {
-                    var task = Task.Run(async () =>
+                    bool success = false;
+                    string currentOutputPath = null; // Path for this specific item
+                    string fileExtension = Path.GetExtension(itemPath).ToLowerInvariant();
+
+                    try
                     {
-                        bool result = false;
-                        string file_path = file.Path;
-                        if (!string.IsNullOrEmpty(targetPath) && isSaveInDifferentPathVar)
+                        // Determine target path base (where to save decrypted results)
+                        string targetPathBase;
+                        if (isSaveInDifferentPathVar && !string.IsNullOrEmpty(targetPath))
                         {
-                            new_file_path = Path.Combine(targetPath, file.Name);
+                            targetPathBase = targetPath; // Use specified target directory
                         }
                         else
                         {
-                            new_file_path = file_path.Substring(0, file_path.Length - 4);
+                            targetPathBase = Path.GetDirectoryName(itemPath); // Save in the same directory as the encrypted file
                         }
-                        switch (algorithm_index)
+
+                        // --- Handle based on file extension ---
+                        if (fileExtension == ".enc") // Standard encrypted file
                         {
-                            // AES-GCM
-                            case 0:
-                                if (!string.IsNullOrEmpty(psd))
-                                {
-                                    result = await Decrypt.AES_GCM_Decrypt(file_path, new_file_path, psd);
-                                }
-                                break;
-                            // ChaCha20-Poly1305
-                            case 1:
-                                if (!string.IsNullOrEmpty(psd))
-                                {
-                                    result = await Decrypt.ChaCha20_Poly1305_Decrypt(file_path, new_file_path, psd);
-                                    
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                        if (result)
-                        {
-                            // Decrypt success
-                            if (!keepCurrentFile)
+                            string decryptedFileName = Path.GetFileNameWithoutExtension(itemPath); // Remove .enc
+                            currentOutputPath = Path.Combine(targetPathBase, decryptedFileName);
+
+                            switch (algorithm_index)
                             {
-                                System.IO.File.Delete(file_path);
+                                case 0:
+                                    success = await Decrypt.AES_GCM_Decrypt(itemPath, currentOutputPath, psd);
+                                    break;
+                                case 1:
+                                    success = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, currentOutputPath, psd);
+                                    break;
                             }
                         }
+                        else if (fileExtension == ".encfolder") // Zipped and encrypted folder
+                        {
+                            string originalFolderName = Path.GetFileNameWithoutExtension(itemPath); // Remove .encfolder
+                            currentOutputPath = Path.Combine(targetPathBase, originalFolderName); // Target is a folder
+                            string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
 
-                        if (!result) Interlocked.Increment(ref error_time);
-                        Interlocked.Increment(ref current_progress);
+                            bool decryptZipSuccess = false;
+                            try
+                            {
+                                switch (algorithm_index)
+                                {
+                                    case 0:
+                                        decryptZipSuccess = await Decrypt.AES_GCM_Decrypt(itemPath, tempZipPath, psd);
+                                        break;
+                                    case 1:
+                                        decryptZipSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, tempZipPath, psd);
+                                        break;
+                                }
 
-                        // 更新进度条必须在主线程
+                                if (decryptZipSuccess)
+                                {
+                                    // Ensure target directory exists and is empty or handle overwrite
+                                    if (Directory.Exists(currentOutputPath))
+                                    {
+                                        // Optional: Decide how to handle existing folder (delete, merge, error)
+                                        // Simple approach: Delete existing before extraction
+                                        Directory.Delete(currentOutputPath, true);
+                                    }
+                                    Directory.CreateDirectory(currentOutputPath);
+                                    ZipFile.ExtractToDirectory(tempZipPath, currentOutputPath);
+                                    success = true; // Mark success if decryption and extraction worked
+                                }
+                            }
+                            finally
+                            {
+                                // Clean up temp zip file
+                                if (System.IO.File.Exists(tempZipPath))
+                                {
+                                    try { System.IO.File.Delete(tempZipPath); } catch { /* Log error maybe */ }
+                                }
+                            }
+                        }
+                        else if (fileExtension == ".encrec") // Recursively encrypted folder
+                        {
+                            // Call the recursive decryption method
+                            // It returns the path of the decrypted folder on success, empty on failure
+                            currentOutputPath = await DecryptFilesinFolder_Recursion(itemPath, algorithm_index, psd, (isSaveInDifferentPathVar && !string.IsNullOrEmpty(targetPath)) ? targetPath : null);
+                            success = !string.IsNullOrEmpty(currentOutputPath);
+                        }
+                        else
+                        {
+                            // Unknown file type, treat as error
+                            success = false;
+                            await DispatcherQueue.EnqueueAsync(() =>
+                            {
+                                _ = ShowDialog("跳过", "OK", content: $"未知或不支持的文件类型: {itemName}");
+                            });
+                        }
+
+                        // --- Post-processing ---
+                        if (success)
+                        {
+                            // Store the first successful output path for "Open Folder"
+                            Interlocked.CompareExchange(ref firstOutputPath, currentOutputPath, null);
+
+                            // Delete original encrypted file/folder if needed and successful
+                            if (!keepCurrentFile && System.IO.File.Exists(itemPath)) // Check File exists for .enc, .encfolder, .encrec
+                            {
+                                try
+                                {
+                                    System.IO.File.Delete(itemPath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog("清理失败", "OK", content: $"无法删除原始文件 {itemName}: {ex.Message}");
+                                    });
+                                }
+                            }
+                            else if (!keepCurrentFile && Directory.Exists(itemPath)) // Should not happen based on input, but defensive check
+                            {
+                                try { Directory.Delete(itemPath, true); } catch { /* Log */ }
+                            }
+                        }
+                        else
+                        {
+                            // Decryption failed for this item
+                            Interlocked.Increment(ref error_count);
+                            await DispatcherQueue.EnqueueAsync(() =>
+                            {
+                                // Show specific error only if it wasn't shown inside DecryptFilesinFolder_Recursion etc.
+                                // Generic failure message here if specific ones aren't sufficient.
+                                _ = ShowDialog("解密失败", "OK", content: $"处理文件失败: {itemName}. 请检查密码或文件是否损坏。");
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // General error during processing this item
+                        Interlocked.Increment(ref error_count);
+                        success = false;
                         await DispatcherQueue.EnqueueAsync(() =>
                         {
-                            DecryptProgress.Value = (int)((current_progress / (float)num_of_files) * 100);
+                            _ = ShowDialog("错误", "OK", content: $"处理 {itemName} 时发生意外错误: {ex.Message}");
                         });
-                    });
+                    }
+                    finally
+                    {
+                        // Update progress (always increment completed count)
+                        Interlocked.Increment(ref completed);
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            DecryptProgress.Value = (int)((completed / (double)total) * 100);
+                        });
 
-                    tasks.Add(task);
-                }
-            }
+                        throttler.Release(); // Release semaphore
+                    }
+                }); // End Task.Run
 
+                tasks.Add(task);
+            } // End foreach
+
+            // Wait for all decryption tasks to complete
             await Task.WhenAll(tasks);
 
-            UnlockPage();
+            UnlockPage(); // Re-enable UI
 
-            int complete_files = num_of_files - error_time;
-            if (complete_files == 0)
+            // --- Final Dialog ---
+            int successful_count = total - error_count;
+
+            // Update progress bar appearance based on outcome
+            if (successful_count == 0 && total > 0)
             {
                 DecryptProgress.ShowError = true;
             }
-            else if (complete_files < num_of_files)
+            else if (error_count > 0)
             {
-                DecryptProgress.ShowPaused = true;
+                DecryptProgress.ShowPaused = true; // Indicates partial success/failure
             }
             else
             {
@@ -235,28 +352,245 @@ namespace DataLock.Pages
             var loader = new ResourceLoader();
             string decryption_complete_title = loader.GetString("DecryptionCompleteDialogTitle");
             string dialogOK = loader.GetString("DialogOK");
-            string decryption_complete_content = loader.GetString("DecryptionCompleteDialogContent");
-            string error_time_content = loader.GetString("DecryptionErrorTimeContent");
-            string open_folder = loader.GetString("OpenFolder");
+            string decryption_complete_content = loader.GetString("DecryptionCompleteDialogContent"); // "files decrypted successfully."
+            string error_count_content = loader.GetString("DecryptionCompleteDialogContent"); // "files failed."
+            string open_folder = loader.GetString("OpenFolderConfirm"); // "Open output location?"
 
-            ContentDialogResult result_from_dialog = await ShowDialog(decryption_complete_title, dialogOK, content: $"{complete_files} {decryption_complete_content} {error_time} {error_time_content} \n{open_folder}");
-
-            // if user clicks "OK" button
-            if (result_from_dialog == ContentDialogResult.Primary)
+            string dialogMessage = $"{successful_count} {decryption_complete_content}";
+            if (error_count > 0)
             {
-                // Open the folder where the encrypted files are saved
-                string _targetPath = System.IO.Path.GetDirectoryName(new_file_path);
-                var folder = await StorageFolder.GetFolderFromPathAsync(_targetPath);
-                await Windows.System.Launcher.LaunchFolderAsync(folder); // Fix: Pass FolderLauncherOptions as the second argument
+                dialogMessage += $"\n{error_count} {error_count_content}";
             }
 
-            // Clear the input files if all files are successfully decrypted
-            if (complete_files == num_of_files)
+            // Only offer to open folder if at least one item succeeded and we have a path
+            string primaryButtonText = dialogOK;
+            if (successful_count > 0 && !string.IsNullOrEmpty(firstOutputPath))
+            {
+                primaryButtonText = open_folder; // Change OK button text to "Open Folder" text
+            }
+
+            // Show dialog using ShowDialog helper method
+            // Adjust ShowDialog parameters if needed (e.g., add a CloseButtonText parameter)
+            ContentDialogResult result_from_dialog = await ShowDialog(decryption_complete_title, primaryButtonText, content: dialogMessage, closebtn: (primaryButtonText == open_folder) ? dialogOK : null);
+
+
+            // if user clicks the primary button (which might be "Open Folder" or just "OK")
+            if (result_from_dialog == ContentDialogResult.Primary && primaryButtonText == open_folder && !string.IsNullOrEmpty(firstOutputPath))
+            {
+                try
+                {
+                    // Get the directory to open. If firstOutputPath is a file, get its directory. If it's a folder, use it directly.
+                    string folderToOpenPath;
+                    System.IO.FileAttributes attr = System.IO.File.GetAttributes(firstOutputPath);
+                    if ((attr & System.IO.FileAttributes.Directory) == System.IO.FileAttributes.Directory)
+                    {
+                        folderToOpenPath = firstOutputPath;
+                    }
+                    else
+                    {
+                        folderToOpenPath = Path.GetDirectoryName(firstOutputPath);
+                    }
+
+                    if (!string.IsNullOrEmpty(folderToOpenPath) && Directory.Exists(folderToOpenPath))
+                    {
+                        var folder = await StorageFolder.GetFolderFromPathAsync(folderToOpenPath);
+                        await Windows.System.Launcher.LaunchFolderAsync(folder);
+                    }
+                    else
+                    {
+                        _ = ShowDialog("错误", "OK", content: "无法找到或打开输出文件夹。");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _ = ShowDialog("错误", "OK", content: $"无法打开文件夹: {ex.Message}");
+                }
+            }
+
+            // Clear the input list only if all items were processed successfully (or based on user preference)
+            if (error_count == 0)
             {
                 DataList.Clear();
+                FileList.Clear();
+                FolderList.Clear();
             }
+            // Optional: else, remove only successfully decrypted items from DataList
 
             DecryptProgress.Visibility = Visibility.Collapsed;
+        }
+
+        // Dummy 
+
+        private async Task<string> DecryptFilesinFolder_Recursion(string encrecFilePath, int algorithmIndex, string password, string targetPathBase = null)
+        {
+            string finalOutputFolderPath = "";
+            string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+            string tempExtractedEncFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            try
+            {
+                // Determine the base path for the final decrypted folder
+                string baseDirectory;
+                if (!string.IsNullOrEmpty(targetPathBase))
+                {
+                    baseDirectory = targetPathBase;
+                }
+                else
+                {
+                    baseDirectory = Path.GetDirectoryName(encrecFilePath);
+                }
+                // Get the original folder name (remove .encrec extension)
+                string originalFolderName = Path.GetFileNameWithoutExtension(encrecFilePath);
+                finalOutputFolderPath = Path.Combine(baseDirectory, originalFolderName);
+
+                // Ensure the final output directory exists
+                Directory.CreateDirectory(finalOutputFolderPath);
+
+                // 1. Decrypt the outer .encrec file to a temporary zip file
+                bool outerDecryptSuccess = false;
+                switch (algorithmIndex)
+                {
+                    case 0:
+                        outerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encrecFilePath, tempZipPath, password);
+                        break;
+                    case 1:
+                        outerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encrecFilePath, tempZipPath, password);
+                        break;
+                    default:
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            _ = ShowDialog("错误", "OK", content: $"未知解密算法索引 for {encrecFilePath}");
+                        });
+                        return ""; // Indicate failure
+                }
+
+                if (!outerDecryptSuccess)
+                {
+                    await DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        _ = ShowDialog("解密失败", "OK", content: $"无法解密外层文件: {Path.GetFileName(encrecFilePath)}. 可能是密码错误或文件损坏。");
+                    });
+                    return ""; // Indicate failure
+                }
+
+                // 2. Extract the temporary zip file (containing .enc files) to a temporary folder
+                try
+                {
+                    Directory.CreateDirectory(tempExtractedEncFolderPath);
+                    // Important: ExtractRelativePath is a hypothetical helper needed here.
+                    // ZipFile.ExtractToDirectory extracts the base directory from the zip.
+                    // We need to handle the base directory within the zip correctly.
+                    // Assuming the zip created by EncryptFilesinFolder_Recursion has a base directory matching the Guid.
+                    ZipFile.ExtractToDirectory(tempZipPath, tempExtractedEncFolderPath, true); // true to overwrite if needed during testing
+                }
+                catch (Exception ex)
+                {
+                    await DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        _ = ShowDialog("解压失败", "OK", content: $"无法解压临时文件 {Path.GetFileName(tempZipPath)}: {ex.Message}");
+                    });
+                    return ""; // Indicate failure
+                }
+
+                // 3. Find all .enc files in the temporary extracted folder
+                var encryptedFiles = Directory.GetFiles(tempExtractedEncFolderPath, "*.enc", SearchOption.AllDirectories);
+
+                bool allInnerDecryptionsSucceeded = true;
+
+                // 4. Decrypt each .enc file to its final location, preserving structure
+                foreach (var encryptedFilePathInTemp in encryptedFiles)
+                {
+                    // Get the relative path inside the temp extracted folder
+                    string relativeEncPath = Path.GetRelativePath(tempExtractedEncFolderPath, encryptedFilePathInTemp);
+
+                    // Remove the ".enc" extension to get the relative path for the final decrypted file
+                    string relativeDecryptedPath = relativeEncPath.Substring(0, relativeEncPath.Length - ".enc".Length);
+
+                    // Construct the final decrypted file path
+                    string finalDecryptedFilePath = Path.Combine(finalOutputFolderPath, relativeDecryptedPath);
+
+                    // Ensure the target directory exists for the decrypted file
+                    Directory.CreateDirectory(Path.GetDirectoryName(finalDecryptedFilePath)!);
+
+                    // Decrypt the individual .enc file
+                    bool innerDecryptSuccess = false;
+                    switch (algorithmIndex)
+                    {
+                        case 0:
+                            innerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            break;
+                        case 1:
+                            innerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            break;
+                            // No default needed as algorithm was checked earlier
+                    }
+
+                    if (!innerDecryptSuccess)
+                    {
+                        allInnerDecryptionsSucceeded = false;
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            // Log specific file failure, but continue processing others
+                            _ = ShowDialog("部分解密失败", "OK", content: $"无法解密内部文件: {relativeDecryptedPath}. 可能是密码错误或文件损坏。");
+                        });
+                        // Decide if one failure should abort all: If so, add 'return "";' here.
+                        // Current logic logs error and continues.
+                    }
+                }
+
+                // 5. Optionally delete the original .encrec file
+                if (allInnerDecryptionsSucceeded && !keepCurrentFile && System.IO.File.Exists(encrecFilePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(encrecFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        await DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            _ = ShowDialog("清理失败", "OK", content: $"无法删除原始 .encrec 文件 {Path.GetFileName(encrecFilePath)}: {ex.Message}");
+                        });
+                    }
+                }
+
+                // Return the path to the folder containing decrypted files, even if some inner files failed
+                // Or return "" if the outer decryption or extraction failed, or if you want strict all-or-nothing success.
+                return allInnerDecryptionsSucceeded ? finalOutputFolderPath : "";
+
+
+            }
+            catch (Exception ex)
+            {
+                await DispatcherQueue.EnqueueAsync(() =>
+                {
+                    _ = ShowDialog("递归解密失败", "OK", content: $"处理 {Path.GetFileName(encrecFilePath)} 时发生错误: {ex.Message}");
+                });
+                return ""; // Indicate failure
+            }
+            finally
+            {
+                // 6. Clean up temporary files and folders
+                try
+                {
+                    if (System.IO.File.Exists(tempZipPath))
+                    {
+                        System.IO.File.Delete(tempZipPath);
+                    }
+                    if (Directory.Exists(tempExtractedEncFolderPath))
+                    {
+                        Directory.Delete(tempExtractedEncFolderPath, true);
+                    }
+                }
+                catch (Exception cleanupEx)
+                {
+                    await DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        _ = ShowDialog("清理失败", "OK", content: $"无法清理临时文件/文件夹: {cleanupEx.Message}");
+                    });
+                    // Log cleanup error, but don't change the success/failure outcome of the decryption itself
+                }
+            }
         }
 
 
@@ -278,7 +612,7 @@ namespace DataLock.Pages
                         string fileType = file.FileType;
                         DateTime createdDate = file.DateCreated.DateTime;
                         DateTime modifiedDate = DateTime.Now; // Assume upload time as modified date
-                        if (fileType == ".enc")
+                        if (fileType == ".enc" || fileType == ".encfolder" || fileType == ".encrec")
                         {
                             // 处理加密文件
                             FileList.Add(new Modules.File(fileName, createdDate, fileType, fileSize, filePath));

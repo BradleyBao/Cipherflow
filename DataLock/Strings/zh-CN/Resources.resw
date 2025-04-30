@@ -399,4 +399,13 @@
   <data name="VerifyFailedWindowsHelloMsg" xml:space="preserve">
     <value>Windows Hello 验证错误：软件锁定</value>
   </data>
+  <data name="EncryptPage_LoopFolder_Uid.Header" xml:space="preserve">
+    <value>加密文件夹中的文件</value>
+  </data>
+  <data name="EncryptPage_LoopFolder_Uid.Description" xml:space="preserve">
+    <value>加密文件夹中所有文件和文件夹</value>
+  </data>
+  <data name="OpenFolderConfirm" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
 </root>

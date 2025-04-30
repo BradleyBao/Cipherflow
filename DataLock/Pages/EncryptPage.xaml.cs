@@ -25,6 +25,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System.Text;
+using System.IO.Compression;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -44,6 +45,7 @@ namespace DataLock.Pages
 
         public string targetPath = string.Empty;
         private bool isSaveInDifferentPathVar = false;
+        private bool EncryptEveryFileinFolderVar = false;
         private bool keepCurrentFile = false;
         private string algorithm_link = "https://www.tianyibrad.com";
         private bool first_time = true;
@@ -327,6 +329,91 @@ namespace DataLock.Pages
                             }
 
                         }
+                        else if (item is Modules.Folder folder)
+                        {
+                            string folder_path = folder.Path;
+
+                            if (EncryptEveryFileinFolderVar)
+                            {
+                                // 如果是“逐文件加密”模式，则递归加密所有文件
+                                new_file_path = await EncryptFilesinFolder_Recursion(folder_path, algorithm_index, psd, targetPath);
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    // 创建临时 zip 文件路径
+                                    string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+
+                                    // Step 1: 压缩目录
+                                    await Task.Run(() =>
+                                    {
+                                        ZipFile.CreateFromDirectory(folder_path, tempZipPath, CompressionLevel.Fastest, false);
+                                    });
+
+                                    // Step 2: 生成目标加密文件路径
+                                    if (isSaveInDifferentPathVar && !string.IsNullOrEmpty(targetPath))
+                                    {
+                                        new_file_path = Path.Combine(targetPath, folder.Name + ".encfolder");
+                                    }
+                                    else
+                                    {
+                                        new_file_path = folder_path + ".encfolder";
+                                    }
+
+                                    // Step 3: 加密
+                                    switch (algorithm_index)
+                                    {
+                                        case 0: // AES-GCM
+                                            if (!string.IsNullOrEmpty(psd))
+                                                await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, psd);
+                                            break;
+                                        case 1: // ChaCha20-Poly1305
+                                            if (!string.IsNullOrEmpty(psd))
+                                                await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, psd);
+                                            break;
+                                        default:
+                                            await DispatcherQueue.EnqueueAsync(() =>
+                                            {
+                                                _ = ShowDialog("错误", "OK", content: "未知的加密算法索引");
+                                            });
+                                            break;
+                                    }
+
+                                    // Step 4: 删除中间文件和原始文件夹（如未设置保留）
+                                    try
+                                    {
+                                        if (System.IO.File.Exists(tempZipPath))
+                                            System.IO.File.Delete(tempZipPath);
+
+                                        if (!keepCurrentFile && Directory.Exists(folder_path))
+                                            Directory.Delete(folder_path, true);
+                                    }
+                                    catch (Exception delEx)
+                                    {
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog("清理失败", "OK", content: $"临时文件或原始目录删除失败：{delEx.Message}");
+                                        });
+                                    }
+
+                                    // Step 5: UI 更新
+                                    Interlocked.Increment(ref completed);
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        EncryptProgress.Value = (int)((completed / (float)total) * 100);
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog("加密失败", "OK", content: $"加密文件夹时出错：{ex.Message}");
+                                    });
+                                }
+                            }
+                        }
+
 
                         // Update Progress in UI Thread
                         Interlocked.Increment(ref completed);
@@ -373,9 +460,104 @@ namespace DataLock.Pages
 
             // Clear the input files 
             DataList.Clear();
+            FileList.Clear();
+            FolderList.Clear();
 
             EncryptProgress.Visibility = Visibility.Collapsed;
         }
+
+        private async Task<string> EncryptFilesinFolder_Recursion(string folderPath, int algorithmIndex, string password, string targetPath = null)
+        {
+            try
+            {
+                // 获取原始文件夹名
+                DirectoryInfo folder = new DirectoryInfo(folderPath);
+
+                // 1. 创建临时加密文件夹（用于存放加密后的 .enc 文件）
+                string tempEncryptedFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                Directory.CreateDirectory(tempEncryptedFolderPath);
+
+                // 2. 获取所有文件（包括子目录）
+                var allFiles = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
+
+                foreach (var filePath in allFiles)
+                {
+                    // 3. 获取相对路径，保持目录结构
+                    string relativePath = Path.GetRelativePath(folderPath, filePath);
+                    string targetEncryptedFilePath = Path.Combine(tempEncryptedFolderPath, relativePath + ".enc");
+
+                    // 4. 创建目标目录
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetEncryptedFilePath)!);
+
+                    // 5. 执行加密
+                    switch (algorithmIndex)
+                    {
+                        case 0:
+                            await Encrypt.AES_GCM_Encrypt(filePath, targetEncryptedFilePath, password);
+                            break;
+                        case 1:
+                            await Encrypt.ChaCha20_Poly1305_Encrypt(filePath, targetEncryptedFilePath, password);
+                            break;
+                        default:
+                            await DispatcherQueue.EnqueueAsync(() =>
+                            {
+                                _ = ShowDialog("错误", "OK", content: "未知加密算法索引。");
+                            });
+                            return "";
+                    }
+                }
+
+                // 6. 压缩临时加密文件夹为 zip
+                string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                ZipFile.CreateFromDirectory(tempEncryptedFolderPath, tempZipPath, CompressionLevel.Optimal, includeBaseDirectory: false);
+
+                // 7. 判断保存路径
+                string new_file_path;
+                if (isSaveInDifferentPathVar && !string.IsNullOrEmpty(targetPath))
+                {
+                    new_file_path = Path.Combine(targetPath, folder.Name + ".encrec");
+                }
+                else
+                {
+                    new_file_path = folderPath + ".encrec";
+                }
+
+                // 8. 对 zip 文件加密为最终的 .encrec 文件
+                switch (algorithmIndex)
+                {
+                    case 0:
+                        await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, password);
+                        break;
+                    case 1:
+                        await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, password);
+                        break;
+                }
+
+                // 9. 清理临时文件
+                Directory.Delete(tempEncryptedFolderPath, true);
+                System.IO.File.Delete(tempZipPath);
+
+                // 10. 删除原始文件夹（如需）
+                if (!keepCurrentFile && Directory.Exists(folderPath))
+                {
+                    Directory.Delete(folderPath, true);
+                }
+
+                return new_file_path;
+
+            }
+            catch (Exception ex)
+            {
+                await DispatcherQueue.EnqueueAsync(() =>
+                {
+                    _ = ShowDialog("加密失败", "OK", content: $"文件夹递归加密失败：{ex.Message}");
+                });
+                return "";
+            }
+        }
+
+
+
 
         // Fix the return type of the method to Task instead of Task<null>
         private async void ChooseSavePathFolder_Click(object sender, RoutedEventArgs e)
@@ -508,6 +690,19 @@ namespace DataLock.Pages
         {
             await Windows.System.Launcher.LaunchUriAsync(new Uri(algorithm_link));
 
+        }
+
+        private void EncryptEveryFileinFolder_Toggled(object sender, RoutedEventArgs e)
+        {
+            // If the toggle is on, set the EncryptEveryFileinFolder variable to true
+            if (EncryptEveryFileinFolder.IsOn)
+            {
+                EncryptEveryFileinFolderVar = true;
+            }
+            else
+            {
+                EncryptEveryFileinFolderVar = false;
+            }
         }
     }
 }

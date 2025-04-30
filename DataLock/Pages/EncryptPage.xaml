@@ -118,6 +118,14 @@
                         <ToggleSwitch />
                     </local:SettingsCard>
 
+                    <local:SettingsCard Description="Encrypt Every Files inside the Folder."
+                                        Header="Encrypt Files in Folder"
+                                        IsEnabled="True"
+                                        x:Uid="EncryptPage_LoopFolder_Uid"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xF012;}">
+                        <ToggleSwitch x:Name="EncryptEveryFileinFolder" Toggled="EncryptEveryFileinFolder_Toggled" />
+                    </local:SettingsCard>
+
                     <local:SettingsCard Description="Selecting this option would make a copy of encrypted target files."
                                         Header="Keep original files"
                                         x:Uid="KeepOriginalFilesSettingCardUID"

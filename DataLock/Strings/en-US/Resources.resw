@@ -399,4 +399,13 @@
   <data name="VerifyFailedWindowsHelloMsg" xml:space="preserve">
     <value>Failed to pass Windows Hello Authentication: Software Lockdown</value>
   </data>
+  <data name="EncryptPage_LoopFolder_Uid.Header" xml:space="preserve">
+    <value>Encrypt Files in Folder</value>
+  </data>
+  <data name="EncryptPage_LoopFolder_Uid.Description" xml:space="preserve">
+    <value>Encrypt Every Files inside the Folder.</value>
+  </data>
+  <data name="OpenFolderConfirm" xml:space="preserve">
+    <value>Open Folder</value>
+  </data>
 </root>
