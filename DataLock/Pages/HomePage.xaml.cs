@@ -19,6 +19,7 @@ using Windows.Storage;
 using DataLock.Functions;
 using DataLock.Modules;
 using Windows.ApplicationModel;
+using Windows.Security.Credentials.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,14 +46,18 @@ namespace DataLock.Pages
 
         public async void Auth_user()
         {
+            var loader = new ResourceLoader();
             // If password is enabled, show dialog and lock down the page
             if (SettingManager.Password && !SettingManager.Unlocked)
             {
                 string username = WindowsIdentity.GetCurrent().Name;
-                var loader = new ResourceLoader();
+                
                 string password_msg = loader.GetString("SetupAppPassword");
                 string dialog_ok = loader.GetString("DialogOK");
                 string dialog_cancel = loader.GetString("DialogCancel");
+                string verify_fail_msg_title = loader.GetString("VerifyFailedTitle");
+                string verify_fail_msg = loader.GetString("VerifyFailedPsdMsg");
+                
 
                 // 创建一个 ContentDialog
                 ContentDialog passwordDialog = new ContentDialog
@@ -94,26 +99,67 @@ namespace DataLock.Pages
                             // 密码错误，提示用户
                             var errorDialog = new ContentDialog
                             {
-                                Title = "Error",
-                                Content = "Incorrect password. Software Lock Down",
+                                Title = verify_fail_msg_title,
+                                Content = verify_fail_msg,
                                 CloseButtonText = "OK"
                             };
                             errorDialog.XamlRoot = this.XamlRoot;
                             await errorDialog.ShowAsync();
-                            // Lock Down Page
+                            // Lock Down Page if password is incorrect
                             App.m_window.LockDown();
+                            return;
                         }
                     }
                     else
                     {
                         // 提示用户密码不能为空
                         App.m_window.LockDown();
+                        return;
                     }
                 } else
                 {
                     // Lock Down Page 
                     // Disable Navbar 
                     App.m_window.LockDown();
+                    return;
+                }
+            }
+
+            // If MFA is enabled, show dialog and lock down the page
+            if (SettingManager.MFA && !SettingManager.MFAUnlock)
+            {
+                // If Windows Hello is enabled, use that
+                if (SettingManager.WindowsHello)
+                {
+                    string verify_msg = loader.GetString("WindowsHelloVerify");
+                    string verify_fail_msg_title = loader.GetString("VerifyFailedTitle");
+                    string verify_fail_msg = loader.GetString("VerifyFailedWindowsHelloMsg");
+                    // Authentication using Windows Hello
+                    // Show the Windows Hello authentication dialog
+                    var result = await UserConsentVerifier.RequestVerificationAsync(verify_msg);
+                    // Check the result of the authentication
+                    if (result == UserConsentVerificationResult.Verified)
+                    {
+                        // User verified successfully
+                        SettingManager.MFAUnlock = true;
+                    }
+                    else
+                    {
+                        // User verification failed
+                        SettingManager.MFAUnlock = false;
+                        // 密码错误，提示用户
+                        var errorDialog = new ContentDialog
+                        {
+                            Title = verify_fail_msg_title,
+                            Content = verify_fail_msg,
+                            CloseButtonText = "OK"
+                        };
+                        errorDialog.XamlRoot = this.XamlRoot;
+                        await errorDialog.ShowAsync();
+                        // Lock Down Page if password is incorrect
+                        App.m_window.LockDown();
+                        return;
+                    }
                 }
             }
         }

@@ -71,6 +71,7 @@ namespace DataLock
         private void MainWindow_Closed(object sender, WindowEventArgs args)
         {
             SettingManager.Unlocked = false;
+            SettingManager.MFAUnlock = false;
         }
 
         public void LockDown()

@@ -97,6 +97,9 @@ namespace DataLock.Pages
             var loader = new ResourceLoader();
             string setupPasswordMsg = loader.GetString("SetPassword");
             string setupPasswordMsg2 = loader.GetString("UnsetPassword");
+            string success_msg = loader.GetString("WindowsHelloAlreadySet");
+            string fail_msg = loader.GetString("WindowsHelloNotSet");
+
             // If the password is set, change the text of button to unset password
             if (SettingManager.Password)
             {
@@ -126,6 +129,32 @@ namespace DataLock.Pages
                         break;
                     }
                 }
+            }
+
+            // Set the MFA setting based on the saved setting
+            if (SettingManager.MFA)
+            {
+                EnableWindowsHello.IsOn = true;
+                windows_hello_setting.IsEnabled = true;
+                SettingPage_MFA.IsExpanded = true;
+            }
+            else
+            {
+                EnableWindowsHello.IsOn = false;
+                windows_hello_setting.IsEnabled = false;
+                SettingPage_MFA.IsExpanded = false;
+            }
+
+            // Set the Windows Hello Setting has accpeted when it is on
+            if (SettingManager.WindowsHello)
+            {
+                windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Accept);
+                windows_hello_setting.Description = success_msg;
+            }
+            else
+            {
+                windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Cancel);
+                windows_hello_setting.Description = fail_msg;
             }
         }
 
@@ -166,32 +195,33 @@ namespace DataLock.Pages
         {
             // Perform Windows Hello Authentication
             // Check if the device supports biometric authentication
-            if (hello_result == 0)
+            // Multi-lingual support
+            var loader = new ResourceLoader();
+            string verify_msg = loader.GetString("WindowsHelloVerify");
+            string success_msg = loader.GetString("WindowsHelloSetupSuccess");
+            string fail_msg = loader.GetString("WindowsHelloSetupFailed");
+            // Show the Windows Hello authentication dialog
+            var result = await UserConsentVerifier.RequestVerificationAsync(verify_msg);
+            // Check the result of the authentication
+            if (result == UserConsentVerificationResult.Verified)
             {
-                // Show the Windows Hello authentication dialog
-                var result = await UserConsentVerifier.RequestVerificationAsync("Please verify your identity using Windows Hello");
-                // Check the result of the authentication
-                if (result == UserConsentVerificationResult.Verified)
-                {
-                    // Authentication was successful
-                    windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Accept);
-                    windows_hello_setting.Description = "Windows Hello is set up successfully.";
-                    hello_auth_result = true;
-                }
-                else
-                {
-                    // Authentication failed
-                    windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Cancel);
-                    windows_hello_setting.Description = "Windows Hello authentication failed.";
-                    hello_auth_result = false;
-                }
+                // Authentication was successful
+                windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Accept);
+                windows_hello_setting.Description = success_msg;
+
+                // Set the Windows Hello setting to true
+                SettingManager.WindowsHello = true;
             }
             else
             {
-                // Show an error message if biometric authentication is not available
-                windows_hello_setting.Description = "Windows Hello is not available.";
-                hello_auth_result = false;
+                // Authentication failed
+                windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Cancel);
+                windows_hello_setting.Description = fail_msg;
+
+                // Set the Windows Hello setting to false
+                SettingManager.WindowsHello = false;
             }
+
         }
 
         private void LoadSetting()
@@ -357,6 +387,28 @@ namespace DataLock.Pages
                 string dialog_cancel = loader.GetString("DialogCancel");
                 string restartRequire = loader.GetString("RestartRequireMsg");
                 await ShowDialog(languageChangedMsg, dialog_ok, btn2: "", closebtn: "", ContentDialogButton.Primary, restartRequire);
+            }
+        }
+
+        private void EnableWindowsHello_Toggled(object sender, RoutedEventArgs e)
+        {
+            // If the toggle switch is on, enable Windows Hello Setting Card
+            if (EnableWindowsHello.IsOn)
+            {
+                // Enable Windows Hello Setting Card
+                windows_hello_setting.IsEnabled = true;
+                // Expand EnableWindowHello Setting Card
+                SettingPage_MFA.IsExpanded = true;
+
+                SettingManager.MFA = true;
+            }
+            else
+            {
+                windows_hello_setting.IsEnabled = false;
+                SettingPage_MFA.IsExpanded = false;
+
+                SettingManager.MFA = false;
+
             }
         }
     }

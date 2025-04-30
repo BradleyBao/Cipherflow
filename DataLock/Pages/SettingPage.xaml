@@ -73,10 +73,11 @@
 
                 <controls:SettingsExpander Description="Setup Multi-factor authentication."
                                            Header="MFA"
+                                           x:Name="SettingPage_MFA"
                                            x:Uid="SettingPage_MFA_Title"
-                                           IsEnabled="False"
+                                           IsEnabled="True"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE83D;}">
-                    <ToggleSwitch IsOn="False" />
+                    <ToggleSwitch IsOn="False" x:Name="EnableWindowsHello" Toggled="EnableWindowsHello_Toggled" />
 
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard x:Name="windows_hello_setting"

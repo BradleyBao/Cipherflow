@@ -375,4 +375,28 @@
   <data name="AES_GCM_Des_Link" xml:space="preserve">
     <value>https://en.wikipedia.org/wiki/Advanced_Encryption_Standard</value>
   </data>
+  <data name="WindowsHelloVerify" xml:space="preserve">
+    <value>Please verify your identity using Windows Hello. </value>
+  </data>
+  <data name="WindowsHelloSetupSuccess" xml:space="preserve">
+    <value>Windows Hello is set up successfully.</value>
+  </data>
+  <data name="WindowsHelloSetupFailed" xml:space="preserve">
+    <value>Windows Hello authentication failed.</value>
+  </data>
+  <data name="WindowsHelloAlreadySet" xml:space="preserve">
+    <value>Windows Hello has been set.</value>
+  </data>
+  <data name="WindowsHelloNotSet" xml:space="preserve">
+    <value>Windows Hello has not been set.</value>
+  </data>
+  <data name="VerifyFailedTitle" xml:space="preserve">
+    <value>Authentication Failed</value>
+  </data>
+  <data name="VerifyFailedPsdMsg" xml:space="preserve">
+    <value>Incorrect Password: Software Lockdown.</value>
+  </data>
+  <data name="VerifyFailedWindowsHelloMsg" xml:space="preserve">
+    <value>Failed to pass Windows Hello Authentication: Software Lockdown</value>
+  </data>
 </root>
