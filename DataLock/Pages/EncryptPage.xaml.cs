@@ -271,6 +271,7 @@ namespace DataLock.Pages
             EncryptProgress.ShowError = false;
             var tasks = new List<Task>();
             string new_file_path = "";
+            string tempFolder = SettingManager.TempFilePath;
 
             // 最大并发数，可调整
             var throttler = new SemaphoreSlim(4);
@@ -305,6 +306,11 @@ namespace DataLock.Pages
                                     {
                                         //await Encrypt.AES_GCM_Encrypt(file_path, new_file_path); // implement if needed
                                     }
+                                    else if (new FileInfo(file_path).Length >= 2L * 1024 * 1024 * 1024)
+                                    {
+                                        // Use Stream Encryption
+                                        await Encrypt.AES_GCM_Encrypt_Stream(file_path, new_file_path, psd);
+                                    }
                                     else
                                     {
                                         await Encrypt.AES_GCM_Encrypt(file_path, new_file_path, psd);
@@ -318,7 +324,17 @@ namespace DataLock.Pages
                                     }
                                     else
                                     {
-                                        await Encrypt.ChaCha20_Poly1305_Encrypt(file_path, new_file_path, psd);
+                                        // Check if the file is larger than 2GB
+                                        if (new FileInfo(file_path).Length >= 2L * 1024 * 1024 * 1024)
+                                        {
+                                            // Use Stream Encryption
+                                            await Encrypt.ChaCha20_Poly1305_Encrypt_Stream(file_path, new_file_path, psd);
+                                        }
+                                        else
+                                        {
+                                            await Encrypt.ChaCha20_Poly1305_Encrypt(file_path, new_file_path, psd);
+                                        }
+                                            
                                     }
                                     break;
                             }
@@ -343,7 +359,8 @@ namespace DataLock.Pages
                                 try
                                 {
                                     // 创建临时 zip 文件路径
-                                    string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                                    //string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                                    string tempZipPath = Path.Combine(tempFolder, Guid.NewGuid().ToString() + ".zip");
 
                                     // Step 1: 压缩目录
                                     await Task.Run(() =>
@@ -365,12 +382,40 @@ namespace DataLock.Pages
                                     switch (algorithm_index)
                                     {
                                         case 0: // AES-GCM
+
+                                            // Check if the file is larger than 2GB 
+                                            
+
                                             if (!string.IsNullOrEmpty(psd))
-                                                await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, psd);
+                                            {
+                                                if (new FileInfo(tempZipPath).Length >= 2L * 1024 * 1024 * 1024)
+                                                {
+                                                    // Use Stream Encryption
+                                                    await Encrypt.AES_GCM_Encrypt_Stream(tempZipPath, new_file_path, psd);
+                                                }
+                                                else
+                                                {
+                                                    // Use File Encryption
+                                                    await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, psd);
+                                                }
+                                                    
+                                            }
                                             break;
                                         case 1: // ChaCha20-Poly1305
                                             if (!string.IsNullOrEmpty(psd))
-                                                await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, psd);
+                                            {
+                                                if (new FileInfo(tempZipPath).Length >= 2L * 1024 * 1024 * 1024)
+                                                {
+                                                    // Use Stream Encryption
+                                                    await Encrypt.ChaCha20_Poly1305_Encrypt_Stream(tempZipPath, new_file_path, psd);
+                                                }
+                                                else
+                                                {
+                                                    // Use File Encryption
+                                                    await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, psd);
+                                                }
+                                            }
+                                                //await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, psd);
                                             break;
                                         default:
                                             await DispatcherQueue.EnqueueAsync(() =>
@@ -472,9 +517,11 @@ namespace DataLock.Pages
             {
                 // 获取原始文件夹名
                 DirectoryInfo folder = new DirectoryInfo(folderPath);
+                string tempFolder = SettingManager.TempFilePath;
 
                 // 1. 创建临时加密文件夹（用于存放加密后的 .enc 文件）
-                string tempEncryptedFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                //string tempEncryptedFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                string tempEncryptedFolderPath = Path.Combine(tempFolder, Guid.NewGuid().ToString());
                 Directory.CreateDirectory(tempEncryptedFolderPath);
 
                 // 2. 获取所有文件（包括子目录）
@@ -493,10 +540,32 @@ namespace DataLock.Pages
                     switch (algorithmIndex)
                     {
                         case 0:
-                            await Encrypt.AES_GCM_Encrypt(filePath, targetEncryptedFilePath, password);
+                            // Check if the file is larger than 2GB
+                            if (new FileInfo(filePath).Length >= 2L * 1024 * 1024 * 1024)
+                            {
+                                // Use Stream Encryption
+                                await Encrypt.AES_GCM_Encrypt_Stream(filePath, targetEncryptedFilePath, password);
+                            }
+                            else
+                            {
+                                // Use File Encryption
+                                await Encrypt.AES_GCM_Encrypt(filePath, targetEncryptedFilePath, password);
+                            }
+                            //await Encrypt.AES_GCM_Encrypt(filePath, targetEncryptedFilePath, password);
                             break;
                         case 1:
-                            await Encrypt.ChaCha20_Poly1305_Encrypt(filePath, targetEncryptedFilePath, password);
+                            // Check if the file is larger than 2GB
+                            if (new FileInfo(filePath).Length >= 2L * 1024 * 1024 * 1024)
+                            {
+                                // Use Stream Encryption
+                                await Encrypt.ChaCha20_Poly1305_Encrypt_Stream(filePath, targetEncryptedFilePath, password);
+                            }
+                            else
+                            {
+                                // Use File Encryption
+                                await Encrypt.ChaCha20_Poly1305_Encrypt(filePath, targetEncryptedFilePath, password);
+                            }
+                            //await Encrypt.ChaCha20_Poly1305_Encrypt(filePath, targetEncryptedFilePath, password);
                             break;
                         default:
                             await DispatcherQueue.EnqueueAsync(() =>
@@ -508,7 +577,8 @@ namespace DataLock.Pages
                 }
 
                 // 6. 压缩临时加密文件夹为 zip
-                string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                //string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                string tempZipPath = Path.Combine(tempFolder, Guid.NewGuid().ToString() + ".zip");
                 ZipFile.CreateFromDirectory(tempEncryptedFolderPath, tempZipPath, CompressionLevel.Optimal, includeBaseDirectory: false);
 
                 // 7. 判断保存路径
@@ -526,10 +596,31 @@ namespace DataLock.Pages
                 switch (algorithmIndex)
                 {
                     case 0:
-                        await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, password);
+                        // Check if the file is larger than 2GB
+                        if (new FileInfo(tempZipPath).Length >= 2L * 1024 * 1024 * 1024)
+                        {
+                            // Use Stream Encryption
+                            await Encrypt.AES_GCM_Encrypt_Stream(tempZipPath, new_file_path, password);
+                        }
+                        else
+                        {
+                            // Use File Encryption
+                            await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, password);
+                        }
+                        //await Encrypt.AES_GCM_Encrypt(tempZipPath, new_file_path, password);
                         break;
                     case 1:
-                        await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, password);
+                        if (new FileInfo(tempZipPath).Length >= 2L * 1024 * 1024 * 1024)
+                        {
+                            // Use Stream Encryption
+                            await Encrypt.ChaCha20_Poly1305_Encrypt_Stream(tempZipPath, new_file_path, password);
+                        }
+                        else
+                        {
+                            // Use File Encryption
+                            await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, password);
+                        }
+                            //await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, password);
                         break;
                 }
 

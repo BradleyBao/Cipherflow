@@ -158,6 +158,8 @@ namespace DataLock.Pages
             // Use SemaphoreSlim for concurrency control, matching encryption
             var throttler = new SemaphoreSlim(4); // Adjust concurrency level as needed
 
+            string tempFolder = SettingManager.TempFilePath;
+
             foreach (var item in DataList)
             {
                 // This assumes item has properties like Path and Name, adapt if needed
@@ -196,10 +198,27 @@ namespace DataLock.Pages
                             switch (algorithm_index)
                             {
                                 case 0:
-                                    success = await Decrypt.AES_GCM_Decrypt(itemPath, currentOutputPath, psd);
+                                    // If file size is too large, use stream decryption
+                                    if (new FileInfo(itemPath).Length >= 2L * 1024 * 1024 * 1024)
+                                    {
+                                        success = await Decrypt.AES_GCM_Decrypt_Stream(itemPath, currentOutputPath, psd);
+                                    } else
+                                    {
+                                        success = await Decrypt.AES_GCM_Decrypt(itemPath, currentOutputPath, psd);
+                                    }
+                                        
                                     break;
                                 case 1:
-                                    success = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, currentOutputPath, psd);
+                                    // If file size is too large, use stream decryption
+                                    if (new FileInfo(itemPath).Length >= 2L * 1024 * 1024 * 1024)
+                                    {
+                                        success = await Decrypt.ChaCha20_Poly1305_Decrypt_Stream(itemPath, currentOutputPath, psd);
+                                    }
+                                    else
+                                    {
+                                        success = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, currentOutputPath, psd);
+                                    }
+                                    //success = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, currentOutputPath, psd);
                                     break;
                             }
                         }
@@ -207,7 +226,8 @@ namespace DataLock.Pages
                         {
                             string originalFolderName = Path.GetFileNameWithoutExtension(itemPath); // Remove .encfolder
                             currentOutputPath = Path.Combine(targetPathBase, originalFolderName); // Target is a folder
-                            string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                            //string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+                            string tempZipPath = Path.Combine(tempFolder, Guid.NewGuid().ToString() + ".zip");
 
                             bool decryptZipSuccess = false;
                             try
@@ -215,10 +235,26 @@ namespace DataLock.Pages
                                 switch (algorithm_index)
                                 {
                                     case 0:
-                                        decryptZipSuccess = await Decrypt.AES_GCM_Decrypt(itemPath, tempZipPath, psd);
+                                        // If file size is too large, use stream decryption
+                                        if (new FileInfo(itemPath).Length >= 2L * 1024 * 1024 * 1024)
+                                        {
+                                            decryptZipSuccess = await Decrypt.AES_GCM_Decrypt_Stream(itemPath, tempZipPath, psd);
+                                        } else
+                                        {
+                                            decryptZipSuccess = await Decrypt.AES_GCM_Decrypt(itemPath, tempZipPath, psd);
+                                        }
                                         break;
                                     case 1:
-                                        decryptZipSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, tempZipPath, psd);
+                                        // If file size is too large, use stream decryption
+                                        if (new FileInfo(itemPath).Length >= 2L * 1024 * 1024 * 1024)
+                                        {
+                                            decryptZipSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt_Stream(itemPath, tempZipPath, psd);
+                                        }
+                                        else
+                                        {
+                                            decryptZipSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(itemPath, tempZipPath, psd);
+                                        }
+                                            
                                         break;
                                 }
 
@@ -423,9 +459,12 @@ namespace DataLock.Pages
 
         private async Task<string> DecryptFilesinFolder_Recursion(string encrecFilePath, int algorithmIndex, string password, string targetPathBase = null)
         {
+            string tempFolder = SettingManager.TempFilePath;
             string finalOutputFolderPath = "";
-            string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
-            string tempExtractedEncFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            //string tempZipPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".zip");
+            string tempZipPath = Path.Combine(tempFolder, Guid.NewGuid().ToString() + ".zip");
+            //string tempExtractedEncFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            string tempExtractedEncFolderPath = Path.Combine(tempFolder, Guid.NewGuid().ToString());
 
             try
             {
@@ -451,10 +490,27 @@ namespace DataLock.Pages
                 switch (algorithmIndex)
                 {
                     case 0:
-                        outerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encrecFilePath, tempZipPath, password);
+                        // If file size is too large, use stream decryption
+                        if (new FileInfo(encrecFilePath).Length >= 2L * 1024 * 1024 * 1024)
+                        {
+                            outerDecryptSuccess = await Decrypt.AES_GCM_Decrypt_Stream(encrecFilePath, tempZipPath, password);
+                        } else
+                        {
+                            outerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encrecFilePath, tempZipPath, password);
+                        }
                         break;
                     case 1:
-                        outerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encrecFilePath, tempZipPath, password);
+                        // If file size is too large, use stream decryption
+                        if (new FileInfo(encrecFilePath).Length >= 2L * 1024 * 1024 * 1024)
+                        {
+                            outerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt_Stream(encrecFilePath, tempZipPath, password);
+                        }
+                        else
+                        {
+                            // If file size is not too large, use normal decryption
+                            outerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encrecFilePath, tempZipPath, password);
+                        }
+                            
                         break;
                     default:
                         await DispatcherQueue.EnqueueAsync(() =>
@@ -517,10 +573,28 @@ namespace DataLock.Pages
                     switch (algorithmIndex)
                     {
                         case 0:
-                            innerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            // If file size is too large, use stream decryption
+                            if (new FileInfo(encryptedFilePathInTemp).Length >= 2L * 1024 * 1024 * 1024)
+                            {
+                                innerDecryptSuccess = await Decrypt.AES_GCM_Decrypt_Stream(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            }
+                            else
+                            {
+                                innerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            }
+                            //innerDecryptSuccess = await Decrypt.AES_GCM_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
                             break;
                         case 1:
-                            innerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            // If file size is too large, use stream decryption
+                            if (new FileInfo(encryptedFilePathInTemp).Length >= 2L * 1024 * 1024 * 1024)
+                            {
+                                innerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt_Stream(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            }
+                            else
+                            {
+                                innerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
+                            }
+                            //innerDecryptSuccess = await Decrypt.ChaCha20_Poly1305_Decrypt(encryptedFilePathInTemp, finalDecryptedFilePath, password);
                             break;
                             // No default needed as algorithm was checked earlier
                     }

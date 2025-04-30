@@ -1,6 +1,7 @@
 ﻿using Microsoft.Windows.Storage;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +47,12 @@ namespace DataLock.Functions
         {
             get => settings.Values["WindowsHello"] is bool mfa ? mfa : false;
             set => settings.Values["WindowsHello"] = value;
+        }
+
+        public static string TempFilePath
+        {
+            get => settings.Values["TempFilePath"] as string ?? Path.GetTempPath();
+            set => settings.Values["TempFilePath"] = value;
         }
     }
 }

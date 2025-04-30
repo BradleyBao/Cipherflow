@@ -408,4 +408,19 @@
   <data name="OpenFolderConfirm" xml:space="preserve">
     <value>Open Folder</value>
   </data>
+  <data name="SettingPage_AppSetting_Title.Text" xml:space="preserve">
+    <value>App Settings</value>
+  </data>
+  <data name="SettingPage_TempFolderPath_Title.Header" xml:space="preserve">
+    <value>Temporary Files</value>
+  </data>
+  <data name="SetupTempFolderPathUid.Content" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="CancelButtonSetting" xml:space="preserve">
+    <value>Unset</value>
+  </data>
+  <data name="SetButtonSetting" xml:space="preserve">
+    <value>Set</value>
+  </data>
 </root>

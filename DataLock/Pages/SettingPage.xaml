@@ -53,7 +53,21 @@
                     </ComboBox>
                 </controls:SettingsCard>
 
-                
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="SettingPage_AppSetting_Title"
+                           Text="App Settings" />
+
+                <controls:SettingsCard Description="Default Path "
+                                       Header="Temp"
+                                       x:Uid="SettingPage_TempFolderPath_Title"
+                                       x:Name="TempFolderPath"
+                       HeaderIcon="{ui:FontIcon Glyph=&#xE74D;}">
+                    <Button x:Name="SetupTempFolderPath" 
+                            Content="Set" 
+                            x:Uid="SetupTempFolderPathUid"
+                            Click='SetupTempFolderPath_Click' />
+                </controls:SettingsCard>
+
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="SettingPage_Security_Title"

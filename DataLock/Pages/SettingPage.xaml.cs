@@ -21,6 +21,9 @@ using DataLock.Functions;
 using DataLock.Modules;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System.Security.Principal;
+using Windows.Storage.AccessCache;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -99,6 +102,8 @@ namespace DataLock.Pages
             string setupPasswordMsg2 = loader.GetString("UnsetPassword");
             string success_msg = loader.GetString("WindowsHelloAlreadySet");
             string fail_msg = loader.GetString("WindowsHelloNotSet");
+            string cancelButtonSetting = loader.GetString("CancelButtonSetting");
+            string setButtonSetting = loader.GetString("SetButtonSetting");
 
             // If the password is set, change the text of button to unset password
             if (SettingManager.Password)
@@ -156,6 +161,26 @@ namespace DataLock.Pages
                 windows_hello_setting.HeaderIcon = new SymbolIcon(Symbol.Cancel);
                 windows_hello_setting.Description = fail_msg;
             }
+
+            // Set Temp Folder Path
+            // If Saved in Setting 
+            string tempFolderPath = SettingManager.TempFilePath;
+            if (!tempFolderPath.Equals(Path.GetTempPath()))
+            {
+                tempFolderPath = SettingManager.TempFilePath;
+                TempFolderPath.Description = tempFolderPath;
+                SetupTempFolderPath.Content = cancelButtonSetting;
+            }
+            else
+            {
+                // If not set, set to default temp folder
+                var tempFolder = ApplicationData.Current.TemporaryFolder;
+                tempFolderPath = tempFolder.Path;
+                TempFolderPath.Description = tempFolderPath;
+                SetupTempFolderPath.Content = setButtonSetting;
+            }
+
+            
         }
 
         private async Task<int> CheckBiometricSupport()
@@ -410,6 +435,61 @@ namespace DataLock.Pages
                 SettingManager.MFA = false;
 
             }
+        }
+
+        private async void SetupTempFolderPath_Click(object sender, RoutedEventArgs e)
+        {
+            var loader = new ResourceLoader();
+            string cancelButtonSetting = loader.GetString("CancelButtonSetting");
+            string setButtonSetting = loader.GetString("SetButtonSetting");
+            // If already set, set back to default
+            if (!SettingManager.TempFilePath.Equals(Path.GetTempPath()))
+            {
+                SettingManager.TempFilePath = Path.GetTempPath();
+                TempFolderPath.Description = Path.GetTempPath();
+                SetupTempFolderPath.Content = setButtonSetting;
+                return;
+            }
+
+            // Open Dialog to select a folder
+            //disable the button to avoid double-clicking
+            var senderButton = sender as Button;
+            senderButton.IsEnabled = false;
+
+            // Create a folder picker
+            FolderPicker openPicker = new Windows.Storage.Pickers.FolderPicker();
+
+            // See the sample code below for how to make the window accessible from the App class.
+            var window = App.m_window;
+
+            // Retrieve the window handle (HWND) of the current WinUI 3 window.
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+            // Initialize the folder picker with the window handle (HWND).
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+            // Set options for your folder picker
+            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            openPicker.FileTypeFilter.Add("*");
+
+            // Open the picker for the user to pick a folder
+            StorageFolder folder = await openPicker.PickSingleFolderAsync();
+            if (folder != null)
+            {
+                StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+                SettingManager.TempFilePath = folder.Path;
+                TempFolderPath.Description = folder.Path;
+                SetupTempFolderPath.Content = cancelButtonSetting;
+            }
+            else
+            {
+                
+            }
+
+            //re-enable the button
+            senderButton.IsEnabled = true;
+
+
         }
     }
 }

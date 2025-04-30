@@ -408,4 +408,19 @@
   <data name="OpenFolderConfirm" xml:space="preserve">
     <value>打开文件夹</value>
   </data>
+  <data name="SettingPage_AppSetting_Title.Text" xml:space="preserve">
+    <value>应用设置</value>
+  </data>
+  <data name="SettingPage_TempFolderPath_Title.Header" xml:space="preserve">
+    <value>临时文件</value>
+  </data>
+  <data name="SetupTempFolderPathUid.Content" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="CancelButtonSetting" xml:space="preserve">
+    <value>取消设置</value>
+  </data>
+  <data name="SetButtonSetting" xml:space="preserve">
+    <value>设置</value>
+  </data>
 </root>

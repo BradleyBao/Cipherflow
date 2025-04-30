@@ -80,6 +80,69 @@ namespace DataLock.Functions
             }
         }
 
+        public static async Task<bool> AES_GCM_Decrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        {
+            try
+            {
+                using FileStream inputFs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
+                using FileStream outputFs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
+
+                // Salt
+                byte[] salt = new byte[16];
+                int readSalt = await inputFs.ReadAsync(salt, 0, salt.Length);
+                if (readSalt != 16) return false;
+
+                byte[] key = DeriveKeyFromPassword(password, salt);
+
+                while (inputFs.Position < inputFs.Length)
+                {
+                    // 读取 4 字节长度（little endian）
+                    byte[] lengthBytes = new byte[4];
+                    if (await inputFs.ReadAsync(lengthBytes, 0, 4) != 4)
+                        return false;
+                    int cipherLength = BitConverter.ToInt32(lengthBytes, 0);
+
+                    // Read nonce
+                    byte[] nonce = new byte[12];
+                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length) != nonce.Length)
+                        return false;
+
+                    // Read tag
+                    byte[] tag = new byte[16];
+                    if (await inputFs.ReadAsync(tag, 0, tag.Length) != tag.Length)
+                        return false;
+
+                    // Read ciphertext
+                    byte[] ciphertext = new byte[cipherLength];
+                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length) != ciphertext.Length)
+                        return false;
+
+                    // Decrypt
+                    byte[] plaintext = new byte[ciphertext.Length];
+                    try
+                    {
+                        using var aes = new AesGcm(key);
+                        aes.Decrypt(nonce, ciphertext, tag, plaintext);
+                    }
+                    catch (CryptographicException)
+                    {
+                        Console.WriteLine("Decryption failed: tag mismatch or invalid password.");
+                        return false;
+                    }
+
+                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Decryption error: {ex.Message}");
+                return false;
+            }
+        }
+
+
         public static async Task<bool> ChaCha20_Poly1305_Decrypt(string encryptedFilePath, string outputFilePath, string password)
         {
             byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
@@ -113,6 +176,69 @@ namespace DataLock.Functions
                 return false;
             }
         }
+
+        public static async Task<bool> ChaCha20_Poly1305_Decrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        {
+            try
+            {
+                using FileStream inputFs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
+                using FileStream outputFs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
+
+                // 读取 Salt
+                byte[] salt = new byte[16];
+                if (await inputFs.ReadAsync(salt, 0, salt.Length) != salt.Length)
+                    return false;
+
+                byte[] key = DeriveKeyFromPassword(password, salt);
+
+                while (inputFs.Position < inputFs.Length)
+                {
+                    // 读取密文长度
+                    byte[] lengthBytes = new byte[4];
+                    if (await inputFs.ReadAsync(lengthBytes, 0, 4) != 4)
+                        return false;
+
+                    int cipherLength = BitConverter.ToInt32(lengthBytes, 0);
+
+                    // 读取 Nonce
+                    byte[] nonce = new byte[12];
+                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length) != nonce.Length)
+                        return false;
+
+                    // 读取 Tag
+                    byte[] tag = new byte[16];
+                    if (await inputFs.ReadAsync(tag, 0, tag.Length) != tag.Length)
+                        return false;
+
+                    // 读取 Ciphertext
+                    byte[] ciphertext = new byte[cipherLength];
+                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length) != ciphertext.Length)
+                        return false;
+
+                    byte[] plaintext = new byte[ciphertext.Length];
+                    try
+                    {
+                        using var chacha = new ChaCha20Poly1305(key);
+                        chacha.Decrypt(nonce, ciphertext, tag, plaintext);
+                    }
+                    catch (CryptographicException)
+                    {
+                        Console.WriteLine("Decryption failed: tag mismatch or invalid password.");
+                        return false;
+                    }
+
+                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Decryption error: {ex.Message}");
+                return false;
+            }
+        }
+
 
         public static async Task DecryptFilesInParallelAsync(IEnumerable<(string EncryptedFilePath, string OutputFilePath, string Password)> files)
         {
