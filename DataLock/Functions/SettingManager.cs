@@ -54,5 +54,11 @@ namespace DataLock.Functions
             get => settings.Values["TempFilePath"] as string ?? Path.GetTempPath();
             set => settings.Values["TempFilePath"] = value;
         }
+
+        public static string DisguiseImagePath
+        {
+            get => settings.Values["DisguiseImagePath"] as string ?? "/Assets/CipherflowBanner.png";
+            set => settings.Values["DisguiseImagePath"] = value;
+        }
     }
 }

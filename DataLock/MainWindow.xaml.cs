@@ -49,6 +49,7 @@ namespace DataLock
             ExtendsContentIntoTitleBar = true;  // enable custom titlebar
             AppTitle.Text = "Cipherflow"; // set title text
             SetTitleBar(AppTitleBar);      // set user ui element as titlebar
+            this.Title = "Cipherflow";
             this.AppWindow.SetIcon("Assets/CipherflowLogo.ico");
         }
 
@@ -117,6 +118,9 @@ namespace DataLock
                 case "DynamicsLock":
                     contentFrame.Navigate(typeof(DynamicsLockPage), null, effect);
                     break;
+                case "DisguiseAsJpg":
+                    contentFrame.Navigate(typeof(DisguiseAsImgPage), null, effect);
+                    break;
                 case "Settings":
                     contentFrame.Navigate(typeof(SettingPage), null, effect);
                     break;
@@ -167,6 +171,11 @@ namespace DataLock
                     case "Decrypt":
                         contentFrame.Navigate(typeof(DecryptPage), null, effect);
                         //AppNav.Header = "Decrypt"; // TODO Will add translated text
+                        break;
+
+                    case "DisguiseAsImg":
+                        contentFrame.Navigate(typeof(DisguiseAsImgPage), null, effect);
+                        //AppNav.Header = "Disguise As Jpg"; // TODO Will add translated text
                         break;
 
                     case "Settings":

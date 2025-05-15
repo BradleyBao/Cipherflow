@@ -429,4 +429,115 @@
   <data name="ChangeTempFolderHintBody" xml:space="preserve">
     <value>强烈建议更改存放临时文件的文件夹。</value>
   </data>
+  <data name="access_denied" xml:space="preserve">
+    <value>无权访问</value>
+  </data>
+  <data name="path_too_long" xml:space="preserve">
+    <value>路径过长</value>
+  </data>
+  <data name="arg_except" xml:space="preserve">
+    <value>非法路径</value>
+  </data>
+  <data name="memory_except" xml:space="preserve">
+    <value>内存不足</value>
+  </data>
+  <data name="IOError" xml:space="preserve">
+    <value>文件或文件夹正在被占用</value>
+  </data>
+  <data name="security_except" xml:space="preserve">
+    <value>操作被安全策略阻止</value>
+  </data>
+  <data name="cleaning_cache_error" xml:space="preserve">
+    <value>缓存清理失败</value>
+  </data>
+  <data name="cleaning_cache_error_descript" xml:space="preserve">
+    <value>临时文件或原始目录删除失败</value>
+  </data>
+  <data name="directory_not_found" xml:space="preserve">
+    <value>文件夹不存在</value>
+  </data>
+  <data name="directory_not_found_des" xml:space="preserve">
+    <value>目标文件夹可能已被删除、移动或重命名</value>
+  </data>
+  <data name="access_denied_des" xml:space="preserve">
+    <value>没有足够的权限删除文件或文件夹</value>
+  </data>
+  <data name="path_too_long_des" xml:space="preserve">
+    <value>路径长度超过系统限制</value>
+  </data>
+  <data name="memory_except_des" xml:space="preserve">
+    <value>由于内存不足无法处理文件</value>
+  </data>
+  <data name="encrypt_failed" xml:space="preserve">
+    <value>加密失败</value>
+  </data>
+  <data name="encrypt_failed_descript" xml:space="preserve">
+    <value>加密文件夹时出错</value>
+  </data>
+  <data name="error_list_title_del" xml:space="preserve">
+    <value>无法删除临时文件或源文件</value>
+  </data>
+  <data name="error_list_title_enc" xml:space="preserve">
+    <value>无法加密以下文件或文件夹</value>
+  </data>
+  <data name="error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="unknown_algorithm_index" xml:space="preserve">
+    <value>未知的加密算法索引</value>
+  </data>
+  <data name="file_camouflage" xml:space="preserve">
+    <value>文件伪装</value>
+  </data>
+  <data name="NavDisguise.Content" xml:space="preserve">
+    <value>文件伪装</value>
+  </data>
+  <data name="NavDisguiseAsImg.Content" xml:space="preserve">
+    <value>伪装成图片</value>
+  </data>
+  <data name="NavDisguiseAsImg.ToolTipService.ToolTip" xml:space="preserve">
+    <value>将文件隐藏在图片</value>
+  </data>
+  <data name="NavDecrypt.ToolTipService.ToolTip" xml:space="preserve">
+    <value>密文转明文</value>
+  </data>
+  <data name="NavEncrypt.ToolTipService.ToolTip" xml:space="preserve">
+    <value>明文转密文</value>
+  </data>
+  <data name="SelectPictureTypeSetting.Header" xml:space="preserve">
+    <value>选择伪装的图片格式</value>
+  </data>
+  <data name="SelectPictureTypeSetting.Description" xml:space="preserve">
+    <value>选择文件将要伪装的图片格式</value>
+  </data>
+  <data name="ChangePictureBtn.Content" xml:space="preserve">
+    <value>更改图片</value>
+  </data>
+  <data name="DisguisionPage_Upload_Des.Text" xml:space="preserve">
+    <value>拖放以添加文件</value>
+  </data>
+  <data name="DisguisionPage_Upload_Des_Long.Text" xml:space="preserve">
+    <value>从文件资源管理器或桌面拖动文件并将其放置在此处以添加到伪装列表中。</value>
+  </data>
+  <data name="disguiseSavePathSettingsCardUid.Header" xml:space="preserve">
+    <value>保存至目标文件夹</value>
+  </data>
+  <data name="disguiseSavePathSettingsCardUid.Description" xml:space="preserve">
+    <value>将文件保存在一个特定的文件夹</value>
+  </data>
+  <data name="SavePathSettingCardUid.Description" xml:space="preserve">
+    <value>选择的路径将会显示在这里</value>
+  </data>
+  <data name="ChooseSavePathFolderUid.Content" xml:space="preserve">
+    <value>选择文件夹</value>
+  </data>
+  <data name="DisguiseRun_Btn.Content" xml:space="preserve">
+    <value>执行</value>
+  </data>
+  <data name="PrivateProtocolSetting.Header" xml:space="preserve">
+    <value>私有协议</value>
+  </data>
+  <data name="PrivateProtocolSetting.Description" xml:space="preserve">
+    <value>只有这个软件才能打开并转换</value>
+  </data>
 </root>

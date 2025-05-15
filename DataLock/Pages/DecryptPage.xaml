@@ -8,7 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    xmlns:local="using:CommunityToolkit.WinUI.Controls" xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:modules="using:DataLock.Modules"
+    xmlns:local="using:CommunityToolkit.WinUI.Controls" 
+    xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:modules="using:DataLock.Modules"
     Background="{ThemeResource DesktopAcrylicTransparentBrush}">
 
     <ScrollViewer Margin="5 10" HorizontalAlignment="Stretch">
@@ -90,7 +92,7 @@
                                             Header="Save in target folder"
                                             HorizontalAlignment="Stretch"
                                             Width="Auto"
-                                            HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xEA35;}">
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
                         <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" Toggled="isSaveInDifferentPath_Toggled" />
 

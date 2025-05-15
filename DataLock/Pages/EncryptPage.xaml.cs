@@ -26,6 +26,7 @@ using Windows.Storage;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System.Text;
 using System.IO.Compression;
+using System.Security;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -271,6 +272,7 @@ namespace DataLock.Pages
             EncryptProgress.ShowError = false;
             var tasks = new List<Task>();
             string new_file_path = "";
+            var loader = new ResourceLoader();
             string tempFolder = SettingManager.TempFilePath;
 
             // 最大并发数，可调整
@@ -418,12 +420,18 @@ namespace DataLock.Pages
                                                 //await Encrypt.ChaCha20_Poly1305_Encrypt(tempZipPath, new_file_path, psd);
                                             break;
                                         default:
+                                            // Handle unknown algorithm index
+                                            string error_title = loader.GetString("error");
+                                            string error_content = loader.GetString("unknown_algorithm_index");
                                             await DispatcherQueue.EnqueueAsync(() =>
                                             {
-                                                _ = ShowDialog("错误", "OK", content: "未知的加密算法索引");
+                                                _ = ShowDialog(error_title, "OK", content: error_content);
                                             });
                                             break;
                                     }
+
+                                    
+                                    
 
                                     // Step 4: 删除中间文件和原始文件夹（如未设置保留）
                                     try
@@ -434,11 +442,73 @@ namespace DataLock.Pages
                                         if (!keepCurrentFile && Directory.Exists(folder_path))
                                             Directory.Delete(folder_path, true);
                                     }
-                                    catch (Exception delEx)
+                                    catch (UnauthorizedAccessException uaEx)
                                     {
+                                        string access_denied_tr = loader.GetString("access_denied");
+                                        string access_denied_des_tr = loader.GetString("access_denied_des");
                                         await DispatcherQueue.EnqueueAsync(() =>
                                         {
-                                            _ = ShowDialog("清理失败", "OK", content: $"临时文件或原始目录删除失败：{delEx.Message}");
+                                            _ = ShowDialog(access_denied_tr, "OK", content: $"{access_denied_des_tr}: {uaEx.Message}");
+                                        });
+                                    }
+                                    catch (DirectoryNotFoundException dirEx)
+                                    {
+                                        string directory_not_found_tr = loader.GetString("directory_not_found");
+                                        string directory_not_found_des_tr = loader.GetString("directory_not_found_des");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(directory_not_found_tr, "OK", content: $"{directory_not_found_des_tr}: {dirEx.Message}");
+                                        });
+                                    }
+                                    catch (PathTooLongException pathEx)
+                                    {
+                                        string path_too_long_tr = loader.GetString("path_too_long");
+                                        string path_too_long_des_tr = loader.GetString("path_too_long_des");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(path_too_long_tr, "OK", content: $"{path_too_long_des_tr}： {pathEx.Message}");
+                                        });
+                                    }
+                                    catch (ArgumentException argEx)
+                                    {
+                                        string argument_error_tr = loader.GetString("arg_except");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(argument_error_tr, "OK", content: $"{argument_error_tr}: {argEx.Message}");
+                                        });
+                                    }
+                                    catch (OutOfMemoryException memEx)
+                                    {
+                                        string memory_error_tr = loader.GetString("memory_except");
+                                        string memory_error_des_tr = loader.GetString("memory_except_des"); 
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(memory_error_tr, "OK", content: $"{memory_error_des_tr}: {memEx.Message}");
+                                        });
+                                    }
+                                    catch (IOException ioEx)
+                                    {
+                                        string io_error_tr = loader.GetString("IOError");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(io_error_tr, "OK", content: $"{io_error_tr}: {ioEx.Message}");
+                                        });
+                                    }
+                                    catch (SecurityException secEx)
+                                    {
+                                        string security_error_tr = loader.GetString("security_except");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(security_error_tr, "OK", content: $"{security_error_tr}: {secEx.Message}");
+                                        });
+                                    }
+                                    catch (Exception delEx)
+                                    {
+                                        string delete_error_tr = loader.GetString("cleaning_cache_error");
+                                        string delete_error_des_tr = loader.GetString("cleaning_cache_error_descript");
+                                        await DispatcherQueue.EnqueueAsync(() =>
+                                        {
+                                            _ = ShowDialog(delete_error_tr, "OK", content: $"{delete_error_des_tr}: {delEx.Message}");
                                         });
                                     }
 
@@ -449,13 +519,73 @@ namespace DataLock.Pages
                                         EncryptProgress.Value = (int)((completed / (float)total) * 100);
                                     });
                                 }
-                                catch (Exception ex)
+                                
+                                catch (UnauthorizedAccessException uaEx)
                                 {
+                                    // Handle UnauthorizedAccessException
+                                    string access_denied_tr = loader.GetString("access_denied");
+                                    string access_denied_des_tr = loader.GetString("access_denied_des");
                                     await DispatcherQueue.EnqueueAsync(() =>
                                     {
-                                        _ = ShowDialog("加密失败", "OK", content: $"加密文件夹时出错：{ex.Message}");
+                                        _ = ShowDialog(access_denied_tr, "OK", content: $"{access_denied_des_tr}: {uaEx.Message}");
                                     });
                                 }
+                                catch (PathTooLongException pathEx)
+                                {
+                                    // Handle PathTooLongException
+                                    string path_too_long_tr = loader.GetString("path_too_long");
+                                    string path_too_long_des_tr = loader.GetString("path_too_long_des");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(path_too_long_tr, "OK", content: $"{path_too_long_des_tr}： {pathEx.Message}");
+                                    });
+                                }
+                                catch (ArgumentException argEx)
+                                {
+                                    // Handle ArgumentException
+                                    string argument_error_tr = loader.GetString("arg_except");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(argument_error_tr, "OK", content: $"{argument_error_tr}: {argEx.Message}");
+                                    });
+                                }
+                                catch (OutOfMemoryException memEx)
+                                {
+                                    // Handle OutOfMemoryException
+                                    string memory_error_tr = loader.GetString("memory_except");
+                                    string memory_error_des_tr = loader.GetString("memory_except_des");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(memory_error_tr, "OK", content: $"{memory_error_des_tr}: {memEx.Message}");
+                                    });
+                                }
+                                catch (IOException ioEx)
+                                {
+                                    // Handle IOException
+                                    string io_error_tr = loader.GetString("IOError");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(io_error_tr, "OK", content: $"{io_error_tr}: {ioEx.Message}");
+                                    });
+                                }
+                                catch (SecurityException secEx)
+                                {
+                                    string security_error_tr = loader.GetString("security_except");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(security_error_tr, "OK", content: $"{security_error_tr}: {secEx.Message}");
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    string encryption_error_tr = loader.GetString("encrypt_failed");
+                                    string encryption_error_des_tr = loader.GetString("encrypt_failed_descript");
+                                    await DispatcherQueue.EnqueueAsync(() =>
+                                    {
+                                        _ = ShowDialog(encryption_error_tr, "OK", content: $"{encryption_error_des_tr}: {ex.Message}");
+                                    });
+                                }
+                                
                             }
                         }
 
@@ -485,8 +615,6 @@ namespace DataLock.Pages
 
             await Task.WhenAll(tasks);
             UnlockPage();
-
-            var loader = new ResourceLoader();
             string encryption_complete_title = loader.GetString("EncryptionCompleteDialogTitle");
             string dialogOK = loader.GetString("DialogOK");
             string encryption_complete_content = loader.GetString("EncryptionCompleteDialogContent");

@@ -95,6 +95,18 @@ namespace DataLock.Modules
             ".heic",
             ".psd",
             ".avif",
+        }; 
+
+        public static readonly List<string> supported_enc_files = new List<string>()
+        {
+            ".enc",
+            ".pem",
+            ".crt",
+            ".cer",
+            ".p12",
+            ".pfx",
+            ".encfolder",
+            ".encrec"
         };
 
         public File(string file_name, DateTime date_modified, string file_type, long file_size, string file_path) 
@@ -117,7 +129,9 @@ namespace DataLock.Modules
                 file_type == ".crt" || 
                 file_type == ".cer" || 
                 file_type == ".p12" || 
-                file_type == ".pfx")
+                file_type == ".pfx" || 
+                file_type == ".encfolder" || 
+                file_type == ".encrec")
             {
                 return true;
             }
@@ -147,6 +161,9 @@ namespace DataLock.Modules
 
                 case string when (supported_img_files.Contains(file_type)):
                     return "\uE722";
+
+                case string when (supported_enc_files.Contains(file_type)):
+                    return "\uE8A6";
 
                 default:
                     return "\uE729"; 

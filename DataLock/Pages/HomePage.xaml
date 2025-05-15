@@ -100,7 +100,7 @@ Text="This is content" />-->
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Spacing="24">
-                        <StackPanel Spacing="8" Padding="16" Background="{ThemeResource LayerOnMicaBaseAltFillColorSecondary}" CornerRadius="4">
+                        <StackPanel Spacing="8" Padding="16" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderThickness="1" BorderBrush="{ThemeResource AppBarBorderThemeBrush}" CornerRadius="4">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <!--Font Icon change via status-->
                                 <FontIcon Glyph="&#xE7BA;" FontSize="20" VerticalAlignment="Center"/>
@@ -125,7 +125,7 @@ Text="This is content" />-->
                                     Margin="0,8,0,0"/>
                         </StackPanel>
 
-                        <StackPanel Spacing="4" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
+                        <!--<StackPanel Spacing="4" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
                             <local:SettingsCard x:Name="software_password_setting"
                                                 Description="Set up password for this software. "
                                                 Header="Password"
@@ -146,7 +146,7 @@ Text="This is content" />-->
                                                 HeaderIcon="{ui:FontIcon Glyph=&#xEB68;}"
                                                 IsClickEnabled="True">
                             </local:SettingsCard>
-                        </StackPanel>
+                        </StackPanel>-->
                     </StackPanel>
                 </Grid>
             </StackPanel>

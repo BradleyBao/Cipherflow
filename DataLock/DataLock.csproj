@@ -57,6 +57,11 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Pages\DisguiseAsImgPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Pages\DynamicsLockPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

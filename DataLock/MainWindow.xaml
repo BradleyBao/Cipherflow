@@ -87,6 +87,20 @@
                             <FontIcon Glyph="&#xE785;" />
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
+
+                    <NavigationViewItemHeader x:Uid="NavDisguise" Content="File Camouflage"/>
+
+                    <NavigationViewItem Content="Disguise as Image" 
+                                        x:Uid="NavDisguiseAsImg"
+                                        ToolTipService.ToolTip="Hide files in image." 
+                                        Tag="DisguiseAsImg" 
+                                        x:Name="DisguiseAsImgNav" 
+                                        SelectsOnInvoked="True">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE91B;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+
                     <!--<NavigationViewItemHeader Content="Customize"/>-->
                     <!--<NavigationViewItem Content="DIY" 
                                         ToolTipService.ToolTip="Create your own encription flow" 

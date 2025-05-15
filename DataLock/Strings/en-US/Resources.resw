@@ -429,4 +429,115 @@
   <data name="ChangeTempFolderHintBody" xml:space="preserve">
     <value>It is strongly recommended to change the folder that stored temporary files. </value>
   </data>
+  <data name="access_denied" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="path_too_long" xml:space="preserve">
+    <value>Path Too Long</value>
+  </data>
+  <data name="arg_except" xml:space="preserve">
+    <value>Argument Error</value>
+  </data>
+  <data name="memory_except" xml:space="preserve">
+    <value>Out of Memory</value>
+  </data>
+  <data name="IOError" xml:space="preserve">
+    <value>File / Folder in use</value>
+  </data>
+  <data name="security_except" xml:space="preserve">
+    <value>Operation blocked by Security Policy</value>
+  </data>
+  <data name="cleaning_cache_error" xml:space="preserve">
+    <value>Failed to clear cache</value>
+  </data>
+  <data name="cleaning_cache_error_descript" xml:space="preserve">
+    <value>Failed to clear temp files or original files / folders. </value>
+  </data>
+  <data name="directory_not_found" xml:space="preserve">
+    <value>Directory Not Found</value>
+  </data>
+  <data name="directory_not_found_des" xml:space="preserve">
+    <value>Target Directory might had been deleted, moved, or renamed. </value>
+  </data>
+  <data name="access_denied_des" xml:space="preserve">
+    <value>Insufficient permissions to delete the file or folder</value>
+  </data>
+  <data name="path_too_long_des" xml:space="preserve">
+    <value>Path Length surpasses system limitation. </value>
+  </data>
+  <data name="memory_except_des" xml:space="preserve">
+    <value>Cannot process due to out of memory. </value>
+  </data>
+  <data name="encrypt_failed" xml:space="preserve">
+    <value>Encryption Failed</value>
+  </data>
+  <data name="encrypt_failed_descript" xml:space="preserve">
+    <value>Failed to encrypt the file or folder</value>
+  </data>
+  <data name="error_list_title_del" xml:space="preserve">
+    <value>Cannot Delete Temp / Originals</value>
+  </data>
+  <data name="error_list_title_enc" xml:space="preserve">
+    <value>Cannot Encrypt Files / Folders</value>
+  </data>
+  <data name="error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="unknown_algorithm_index" xml:space="preserve">
+    <value>Unknown Algorithm</value>
+  </data>
+  <data name="file_camouflage" xml:space="preserve">
+    <value>File Camouflage</value>
+  </data>
+  <data name="NavDisguise.Content" xml:space="preserve">
+    <value>File Camouflage</value>
+  </data>
+  <data name="NavDisguiseAsImg.Content" xml:space="preserve">
+    <value>Disguise as JPG</value>
+  </data>
+  <data name="NavDisguiseAsImg.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Hide files in JPG image.</value>
+  </data>
+  <data name="NavDecrypt.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Converting ciphertext into plaintext. </value>
+  </data>
+  <data name="NavEncrypt.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Converting plaintext into ciphertext.</value>
+  </data>
+  <data name="SelectPictureTypeSetting.Header" xml:space="preserve">
+    <value>Picture Type that disguise to</value>
+  </data>
+  <data name="SelectPictureTypeSetting.Description" xml:space="preserve">
+    <value>The picture type that the files are going to disguise to.</value>
+  </data>
+  <data name="ChangePictureBtn.Content" xml:space="preserve">
+    <value>Change Picture</value>
+  </data>
+  <data name="DisguisionPage_Upload_Des.Text" xml:space="preserve">
+    <value>Drag and drop to add files</value>
+  </data>
+  <data name="DisguisionPage_Upload_Des_Long.Text" xml:space="preserve">
+    <value>Drag files from File Explorer or your desktop and drop them here to add files to the disguision list.</value>
+  </data>
+  <data name="disguiseSavePathSettingsCardUid.Header" xml:space="preserve">
+    <value>Save in target folder</value>
+  </data>
+  <data name="disguiseSavePathSettingsCardUid.Description" xml:space="preserve">
+    <value>Save the files into specified directory.</value>
+  </data>
+  <data name="SavePathSettingCardUid.Description" xml:space="preserve">
+    <value>Save Path would display here.</value>
+  </data>
+  <data name="ChooseSavePathFolderUid.Content" xml:space="preserve">
+    <value>Choose Folder</value>
+  </data>
+  <data name="DisguiseRun_Btn.Content" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="PrivateProtocolSetting.Header" xml:space="preserve">
+    <value>Private Protocol</value>
+  </data>
+  <data name="PrivateProtocolSetting.Description" xml:space="preserve">
+    <value>Only this software can open and convert this disguised file.</value>
+  </data>
 </root>

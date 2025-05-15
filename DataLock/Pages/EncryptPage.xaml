@@ -90,7 +90,7 @@
                                             Header="Save in target folder"
                                             HorizontalAlignment="Stretch"
                                             Width="Auto"
-                                            HeaderIcon="{ui:FontIcon Glyph=&#xF439;}">
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xEA35;}">
                         <!--  TODO: This should be TwoWay bound but throws compile error in Uno.  -->
                         <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" Toggled="isSaveInDifferentPath_Toggled" />
 
