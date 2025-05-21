@@ -100,7 +100,7 @@
                                                 IsEnabled="False"
                                                 x:Name="SavePathSettingCard"
                                                 x:Uid="SavePathSettingCardUid">
-                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
+                                <Button x:Name="ChooseSavePathFolder" Content="Select Folder" x:Uid="ChooseSavePathFolderUid" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
 

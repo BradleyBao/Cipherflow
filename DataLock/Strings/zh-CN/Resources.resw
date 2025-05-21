@@ -540,4 +540,43 @@
   <data name="PrivateProtocolSetting.Description" xml:space="preserve">
     <value>只有这个软件才能打开并转换</value>
   </data>
+  <data name="ChangeableExtensionSetting.Header" xml:space="preserve">
+    <value>可变更文件后缀</value>
+  </data>
+  <data name="ChangeableExtensionSetting.Description" xml:space="preserve">
+    <value>允许用户可以通过直接修改后缀来打开文件。目前只有第三方压缩软件可以打开。</value>
+  </data>
+  <data name="DisguisionCompleteDialogTitle" xml:space="preserve">
+    <value>伪装完成</value>
+  </data>
+  <data name="DisguisionCompleteDialogContent" xml:space="preserve">
+    <value>文件成功被伪装</value>
+  </data>
+  <data name="DisguisionCompleteDialogContentErr" xml:space="preserve">
+    <value>无法伪装</value>
+  </data>
+  <data name="security_setting_status_UID.Text" xml:space="preserve">
+    <value>重要安全设置</value>
+  </data>
+  <data name="DisguiseAsImagePage_Title.Text" xml:space="preserve">
+    <value>伪装成图片</value>
+  </data>
+  <data name="DisguiseNotification" xml:space="preserve">
+    <value>目前只支持zip和rar文件能够通过改后缀来直接打开文件</value>
+  </data>
+  <data name="UnmaskModeSettingUID.Header" xml:space="preserve">
+    <value>模式转换</value>
+  </data>
+  <data name="UnmaskModeSettingUID.Description" xml:space="preserve">
+    <value>伪装模式</value>
+  </data>
+  <data name="DisguiseMode" xml:space="preserve">
+    <value>伪装模式</value>
+  </data>
+  <data name="UnmaskMode" xml:space="preserve">
+    <value>取消伪装模式</value>
+  </data>
+  <data name="UnmaskCompleteDialogContent" xml:space="preserve">
+    <value>文件被取消伪装</value>
+  </data>
 </root>

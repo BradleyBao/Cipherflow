@@ -540,4 +540,43 @@
   <data name="PrivateProtocolSetting.Description" xml:space="preserve">
     <value>Only this software can open and convert this disguised file.</value>
   </data>
+  <data name="ChangeableExtensionSetting.Header" xml:space="preserve">
+    <value>Changeable Extensions</value>
+  </data>
+  <data name="ChangeableExtensionSetting.Description" xml:space="preserve">
+    <value>Allow Users to directly change the extension of files. Only compressed files allowed. Only the third-party compressed tool can open. </value>
+  </data>
+  <data name="DisguisionCompleteDialogTitle" xml:space="preserve">
+    <value>Disguise Complete</value>
+  </data>
+  <data name="DisguisionCompleteDialogContent" xml:space="preserve">
+    <value>Files Disguised Successfully</value>
+  </data>
+  <data name="DisguisionCompleteDialogContentErr" xml:space="preserve">
+    <value>Failed to disguise</value>
+  </data>
+  <data name="security_setting_status_UID.Text" xml:space="preserve">
+    <value>Important Security Settings</value>
+  </data>
+  <data name="DisguiseAsImagePage_Title.Text" xml:space="preserve">
+    <value>Disguise as Image</value>
+  </data>
+  <data name="DisguiseNotification" xml:space="preserve">
+    <value>Only Support Compressed Files (.zip, .rar) can be open by changing the extension directly</value>
+  </data>
+  <data name="UnmaskModeSettingUID.Header" xml:space="preserve">
+    <value>Mode Switcher</value>
+  </data>
+  <data name="UnmaskModeSettingUID.Description" xml:space="preserve">
+    <value>Disguise Mode</value>
+  </data>
+  <data name="DisguiseMode" xml:space="preserve">
+    <value>Disguise Mode</value>
+  </data>
+  <data name="UnmaskMode" xml:space="preserve">
+    <value>Unmask Mode</value>
+  </data>
+  <data name="UnmaskCompleteDialogContent" xml:space="preserve">
+    <value>Files unmasked</value>
+  </data>
 </root>

@@ -62,15 +62,19 @@
                             <ComboBoxItem Tag="zh-CN">GIF</ComboBoxItem>
                         </ComboBox>
                     </local:SettingsCard>-->
-                    <local:SettingsCard Description="Only this software can open and convert this disguised file. "
-                                        Header="Private Protocol"
-                                        x:Uid="PrivateProtocolSetting"
-                                        HeaderIcon="{ui:FontIcon Glyph=&#xEE71;}">
-                        <ComboBox x:Name="SelectPictureTypeCombo" SelectedIndex="0">
-                            <ComboBoxItem Tag="auto">JPG</ComboBoxItem>
-                            <ComboBoxItem Tag="en-US">PNG</ComboBoxItem>
-                            <ComboBoxItem Tag="zh-CN">GIF</ComboBoxItem>
-                        </ComboBox>
+                    <local:SettingsCard Description="Disguise Mode "
+                                        Header="Mode Switcher"
+                                        x:Uid="UnmaskModeSettingUID"
+                                        x:Name="UnmaskModeSetting"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xF1CB;}">
+                        <ToggleSwitch x:Name="isDeMode" IsOn="False" Toggled="isDeMode_Toggled" />
+                    </local:SettingsCard>
+                    <local:SettingsCard Description="Allow Users to directly change the extension of files. Only compressed files allowed. "
+                                        Header="Changeable Extensions"
+                                        x:Uid="ChangeableExtensionSetting"
+                                        x:Name="ChangeableExtensionsetting"
+                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
+                        <ToggleSwitch x:Name="isChangeableExtensionOn" IsOn="False" Toggled="isChangeableExtensionOn_Toggled" />
                     </local:SettingsCard>
                     <local:SettingsExpander x:Name="disguiseSavePathSettingsCard"
                                             x:Uid="disguiseSavePathSettingsCardUid"
@@ -81,7 +85,7 @@
                                             Width="Auto"
                                             HeaderIcon="{ui:FontIcon Glyph=&#xEA35;}">
                         
-                        <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" />
+                        <ToggleSwitch x:Name="isSaveInDifferentPath" IsOn="False" Toggled="isSaveInDifferentPath_Toggled" />
 
                         <local:SettingsExpander.Items>
                             <local:SettingsCard Header="Choose Save Path"
@@ -89,7 +93,7 @@
                                                 IsEnabled="False"
                                                 x:Name="SavePathSettingCard"
                                                 x:Uid="SavePathSettingCardUid">
-                                <Button x:Name="ChooseSavePathFolder" x:Uid="ChooseSavePathFolderUid" Content="Select Folder" />
+                                <Button x:Name="ChooseSavePathFolder" x:Uid="ChooseSavePathFolderUid" Content="Select Folder" Click="ChooseSavePathFolder_Click" />
                             </local:SettingsCard>
 
                         </local:SettingsExpander.Items>
@@ -116,6 +120,7 @@
                         <Button x:Name="DeBrowseAndAllFilesBtn" 
                                 x:Uid="DeBrowseAndAllFilesBtn_Btn" 
                                 HorizontalAlignment="Center" 
+                                Click="DeBrowseAndAllFilesBtn_Click"
                                 Content="Browse and add files" />
                     </StackPanel>
                 </Border>

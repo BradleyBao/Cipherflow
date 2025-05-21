@@ -109,8 +109,9 @@ Text="This is content" />-->
                                            Style="{StaticResource SubtitleTextBlockStyle}" 
                                            VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBlock Text="Some settings are not configured. " 
+                            <TextBlock Text="Important Security Settings " 
                                        x:Name="security_setting_status"
+                                       x:Uid="security_setting_status_UID"
                                        TextWrapping="Wrap" 
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             <ProgressBar x:Name="SecuritySettingBar" Value="80" Margin="0,8,0,4"
