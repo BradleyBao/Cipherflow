@@ -104,6 +104,7 @@ namespace DataLock.Pages
             string fail_msg = loader.GetString("WindowsHelloNotSet");
             string cancelButtonSetting = loader.GetString("CancelButtonSetting");
             string setButtonSetting = loader.GetString("SetButtonSetting");
+            string resetButtonSetting = loader.GetString("ResetButtonSetting");
 
             // If the password is set, change the text of button to unset password
             if (SettingManager.Password)
@@ -180,7 +181,22 @@ namespace DataLock.Pages
                 SetupTempFolderPath.Content = setButtonSetting;
             }
 
-            
+            // Set Disguised Image Path
+            string disguisedImagePath = SettingManager.DisguiseImagePath;
+            if (!disguisedImagePath.Equals("ms-appx:///Assets/CipherflowBanner.png"))
+            {
+                SettingPage_DisguisedImgPath.Description = disguisedImagePath;
+                SetupDisguisedImgPath.Content = resetButtonSetting;
+            }
+            else
+            {
+                // If not set, set to default image path
+                disguisedImagePath = "ms-appx:///Assets/CipherflowBanner.png";
+                SettingPage_DisguisedImgPath.Description = disguisedImagePath;
+                SetupDisguisedImgPath.Content = setButtonSetting;
+            }
+
+
         }
 
         private async Task<int> CheckBiometricSupport()
@@ -490,6 +506,56 @@ namespace DataLock.Pages
             senderButton.IsEnabled = true;
 
 
+        }
+
+        private async void SetupDisguisedImgPath_Click(object sender, RoutedEventArgs e)
+        {
+            var loader = new ResourceLoader();
+            string setButtonSetting = loader.GetString("SetButtonSetting");
+            string resetButtonSetting = loader.GetString("ResetButtonSetting");
+            // If already set, set back to default
+            if (!SettingManager.DisguiseImagePath.Equals("ms-appx:///Assets/CipherflowBanner.png"))
+            {
+                SettingManager.DisguiseImagePath = "ms-appx:///Assets/CipherflowBanner.png";
+                SettingPage_DisguisedImgPath.Description = "ms-appx:///Assets/CipherflowBanner.png";
+                SetupDisguisedImgPath.Content = setButtonSetting;
+            }
+            else
+            {
+                // Open Dialog to select a folder
+                //disable the button to avoid double-clicking
+                var senderButton = sender as Button;
+                senderButton.IsEnabled = false;
+                // Create a file picker
+                FileOpenPicker openPicker = new Windows.Storage.Pickers.FileOpenPicker();
+                // See the sample code below for how to make the window accessible from the App class.
+                var window = App.m_window;
+                // Retrieve the window handle (HWND) of the current WinUI 3 window.
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                // Initialize the folder picker with the window handle (HWND).
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+                // Set options for your folder picker
+                openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                openPicker.FileTypeFilter.Add(".png");
+                openPicker.FileTypeFilter.Add(".jpg");
+                openPicker.FileTypeFilter.Add(".jpeg");
+                // Open the picker for the user to pick a folder
+                StorageFile file = await openPicker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", file);
+                    SettingManager.DisguiseImagePath = file.Path;
+                    SettingPage_DisguisedImgPath.Description = file.Path;
+                    SetupDisguisedImgPath.Content = resetButtonSetting;
+                }
+                else
+                {
+                    // User cancelled the picker
+                    SetupDisguisedImgPath.Content = setButtonSetting;
+                }
+                //re-enable the button
+                senderButton.IsEnabled = true;
+            }
         }
     }
 }

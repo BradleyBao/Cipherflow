@@ -57,6 +57,17 @@
                            x:Uid="SettingPage_AppSetting_Title"
                            Text="App Settings" />
 
+                <controls:SettingsCard Description="Disguise As Image "
+                                       Header="Disguised Image Path"
+                                       x:Uid="SettingPage_DisguisedImgPath_Uid"
+                                       x:Name="SettingPage_DisguisedImgPath"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE91B;}">
+                    <Button x:Name="SetupDisguisedImgPath" 
+                            Content="Set" 
+                            x:Uid="SetupDisguisedImgPathUid"
+                            Click="SetupDisguisedImgPath_Click" />
+                </controls:SettingsCard>
+
                 <controls:SettingsCard Description="Default Path "
                                        Header="Temp"
                                        x:Uid="SettingPage_TempFolderPath_Title"

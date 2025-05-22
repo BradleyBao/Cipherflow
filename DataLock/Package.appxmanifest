@@ -10,7 +10,7 @@
   <Identity
     Name="TianYi.Encrafter"
     Publisher="CN=98419A6D-1B04-4EA1-8658-1B5D9D2D15EA"
-    Version="1.2.1.0" />
+    Version="1.3.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="c98d31aa-704d-4694-8251-ef28d1852911" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

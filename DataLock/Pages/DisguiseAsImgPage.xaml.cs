@@ -54,6 +54,7 @@ namespace DataLock.Pages
         internal void Init()
         {
             InitBanner();
+            //Debug_Function();
         }
 
         // Update the InitBanner method to convert the string path to an ImageSource
@@ -65,8 +66,19 @@ namespace DataLock.Pages
             }
             else
             {
-                DisguiseBannerImg.Source = null; // Handle the case where the path is null or empty
+                string path = "ms-appx:///Assets/CipherflowBanner.png";
+                SettingManager.DisguiseImagePath = path;
+                DisguiseBannerImg.Source = new BitmapImage(new Uri(path)); // Handle the case where the path is null or empty
             }
+        }
+
+        internal void Debug_Function()
+        {
+            string path = "ms-appx:///Assets/CipherflowBanner.png";
+            DisguiseBannerImg.Source = new BitmapImage(new Uri(path));
+
+            //DisguiseBannerImg.Source = new BitmapImage(new Uri(SettingManager.DisguiseImagePath));
+            //DisguiseBannerImg.Source = null;
         }
 
         internal void UpdateList()

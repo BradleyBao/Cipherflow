@@ -579,4 +579,13 @@
   <data name="UnmaskCompleteDialogContent" xml:space="preserve">
     <value>Files unmasked</value>
   </data>
+  <data name="SettingPage_DisguisedImgPath_Uid.Header" xml:space="preserve">
+    <value>Disguised Image Path</value>
+  </data>
+  <data name="SetupDisguisedImgPathUid.Content" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="ResetButtonSetting" xml:space="preserve">
+    <value>Reset</value>
+  </data>
 </root>

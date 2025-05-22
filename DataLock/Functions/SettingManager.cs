@@ -57,7 +57,7 @@ namespace DataLock.Functions
 
         public static string DisguiseImagePath
         {
-            get => settings.Values["DisguiseImagePath"] as string ?? "/Assets/CipherflowBanner.png";
+            get => settings.Values["DisguiseImagePath"] as string ?? "ms-appx:///Assets/CipherflowBanner.png";
             set => settings.Values["DisguiseImagePath"] = value;
         }
     }
