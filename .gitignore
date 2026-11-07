@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Project Folder Specific
+tests/
+PROJECT_REVIEW.md

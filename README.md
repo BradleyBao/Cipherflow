@@ -8,6 +8,10 @@ A software that can encrypt and decrypt files. <br><br>
 - File Encryption 
 - File Decryption 
 - Data Security
+- Switch pages while encryption/decryption continues and return to its progress.
+- Remove selected files or folders before processing, or cancel an active operation.
+
+Cancellation keeps completed outputs and preserves cancelled inputs. Progress is retained within the current app session. See [PROJECT_REVIEW.md](PROJECT_REVIEW.md) for validation, known issues, and the GitHub review issue.
 
 # Screenshots 
 ![Screenshot 2025-04-30 181342](https://github.com/user-attachments/assets/5fc8a2da-826b-4369-bd3c-fa3d167c6385)

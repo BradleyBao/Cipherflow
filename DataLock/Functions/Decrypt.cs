@@ -5,17 +5,25 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 
 namespace DataLock.Functions
 {
     public class Decrypt
     {
-        public static async Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, byte[] key)
+        public static Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, byte[] key, CancellationToken cancellationToken = default)
         {
-            // Read the encrypted file
-            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
+            return OperationFiles.WriteAsync(encryptedFilePath, outputFilePath,
+                (staged, token) => AES_GCM_DecryptCore(encryptedFilePath, staged, key, token), cancellationToken);
+        }
 
-            // Number use once 
+        private static async Task<bool> AES_GCM_DecryptCore(string encryptedFilePath, string outputFilePath, byte[] key, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            // Read the encrypted file
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath, cancellationToken);
+
+            // Number use once
             byte[] nonce = new byte[12];
 
             // GCM Tag: Authentication Tag
@@ -43,13 +51,20 @@ namespace DataLock.Functions
                 return false;
             }
 
-            await File.WriteAllBytesAsync(outputFilePath, plaintext);
+            await File.WriteAllBytesAsync(outputFilePath, plaintext, cancellationToken);
             return true;
         }
 
-        public static async Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, string password)
+        public static Task<bool> AES_GCM_Decrypt(string encryptedFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
-            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
+            return OperationFiles.WriteAsync(encryptedFilePath, outputFilePath,
+                (staged, token) => AES_GCM_DecryptCore(encryptedFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> AES_GCM_DecryptCore(string encryptedFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath, cancellationToken);
 
             byte[] salt = new byte[16];
             byte[] nonce = new byte[12];
@@ -71,7 +86,7 @@ namespace DataLock.Functions
                     aes.Decrypt(nonce, ciphertext, tag, plaintext);
                 }
 
-                await File.WriteAllBytesAsync(outputFilePath, plaintext);
+                await File.WriteAllBytesAsync(outputFilePath, plaintext, cancellationToken);
                 return true;
             }
             catch (CryptographicException)
@@ -80,8 +95,15 @@ namespace DataLock.Functions
             }
         }
 
-        public static async Task<bool> AES_GCM_Decrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> AES_GCM_Decrypt_Stream(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => AES_GCM_Decrypt_StreamCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> AES_GCM_Decrypt_StreamCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 using FileStream inputFs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
@@ -89,7 +111,7 @@ namespace DataLock.Functions
 
                 // Salt
                 byte[] salt = new byte[16];
-                int readSalt = await inputFs.ReadAsync(salt, 0, salt.Length);
+                int readSalt = await inputFs.ReadAsync(salt, 0, salt.Length, cancellationToken);
                 if (readSalt != 16) return false;
 
                 byte[] key = DeriveKeyFromPassword(password, salt);
@@ -98,23 +120,23 @@ namespace DataLock.Functions
                 {
                     // 读取 4 字节长度（little endian）
                     byte[] lengthBytes = new byte[4];
-                    if (await inputFs.ReadAsync(lengthBytes, 0, 4) != 4)
+                    if (await inputFs.ReadAsync(lengthBytes, 0, 4, cancellationToken) != 4)
                         return false;
                     int cipherLength = BitConverter.ToInt32(lengthBytes, 0);
 
                     // Read nonce
                     byte[] nonce = new byte[12];
-                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length) != nonce.Length)
+                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length, cancellationToken) != nonce.Length)
                         return false;
 
                     // Read tag
                     byte[] tag = new byte[16];
-                    if (await inputFs.ReadAsync(tag, 0, tag.Length) != tag.Length)
+                    if (await inputFs.ReadAsync(tag, 0, tag.Length, cancellationToken) != tag.Length)
                         return false;
 
                     // Read ciphertext
                     byte[] ciphertext = new byte[cipherLength];
-                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length) != ciphertext.Length)
+                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length, cancellationToken) != ciphertext.Length)
                         return false;
 
                     // Decrypt
@@ -130,11 +152,12 @@ namespace DataLock.Functions
                         return false;
                     }
 
-                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length);
+                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length, cancellationToken);
                 }
 
                 return true;
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 Console.WriteLine($"Decryption error: {ex.Message}");
@@ -143,9 +166,16 @@ namespace DataLock.Functions
         }
 
 
-        public static async Task<bool> ChaCha20_Poly1305_Decrypt(string encryptedFilePath, string outputFilePath, string password)
+        public static Task<bool> ChaCha20_Poly1305_Decrypt(string encryptedFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
-            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath);
+            return OperationFiles.WriteAsync(encryptedFilePath, outputFilePath,
+                (staged, token) => ChaCha20_Poly1305_DecryptCore(encryptedFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> ChaCha20_Poly1305_DecryptCore(string encryptedFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            byte[] fileBytes = await File.ReadAllBytesAsync(encryptedFilePath, cancellationToken);
             byte[] salt = new byte[16];
             byte[] nonce = new byte[12];
             byte[] tag = new byte[16];
@@ -168,7 +198,7 @@ namespace DataLock.Functions
                 {
                     chacha.Decrypt(nonce, ciphertext, tag, plaintext);
                 }
-                await File.WriteAllBytesAsync(outputFilePath, plaintext);
+                await File.WriteAllBytesAsync(outputFilePath, plaintext, cancellationToken);
                 return true;
             }
             catch (CryptographicException)
@@ -177,8 +207,15 @@ namespace DataLock.Functions
             }
         }
 
-        public static async Task<bool> ChaCha20_Poly1305_Decrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> ChaCha20_Poly1305_Decrypt_Stream(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => ChaCha20_Poly1305_Decrypt_StreamCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> ChaCha20_Poly1305_Decrypt_StreamCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 using FileStream inputFs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
@@ -186,7 +223,7 @@ namespace DataLock.Functions
 
                 // 读取 Salt
                 byte[] salt = new byte[16];
-                if (await inputFs.ReadAsync(salt, 0, salt.Length) != salt.Length)
+                if (await inputFs.ReadAsync(salt, 0, salt.Length, cancellationToken) != salt.Length)
                     return false;
 
                 byte[] key = DeriveKeyFromPassword(password, salt);
@@ -195,24 +232,24 @@ namespace DataLock.Functions
                 {
                     // 读取密文长度
                     byte[] lengthBytes = new byte[4];
-                    if (await inputFs.ReadAsync(lengthBytes, 0, 4) != 4)
+                    if (await inputFs.ReadAsync(lengthBytes, 0, 4, cancellationToken) != 4)
                         return false;
 
                     int cipherLength = BitConverter.ToInt32(lengthBytes, 0);
 
                     // 读取 Nonce
                     byte[] nonce = new byte[12];
-                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length) != nonce.Length)
+                    if (await inputFs.ReadAsync(nonce, 0, nonce.Length, cancellationToken) != nonce.Length)
                         return false;
 
                     // 读取 Tag
                     byte[] tag = new byte[16];
-                    if (await inputFs.ReadAsync(tag, 0, tag.Length) != tag.Length)
+                    if (await inputFs.ReadAsync(tag, 0, tag.Length, cancellationToken) != tag.Length)
                         return false;
 
                     // 读取 Ciphertext
                     byte[] ciphertext = new byte[cipherLength];
-                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length) != ciphertext.Length)
+                    if (await inputFs.ReadAsync(ciphertext, 0, ciphertext.Length, cancellationToken) != ciphertext.Length)
                         return false;
 
                     byte[] plaintext = new byte[ciphertext.Length];
@@ -227,11 +264,12 @@ namespace DataLock.Functions
                         return false;
                     }
 
-                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length);
+                    await outputFs.WriteAsync(plaintext, 0, plaintext.Length, cancellationToken);
                 }
 
                 return true;
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 Console.WriteLine($"Decryption error: {ex.Message}");

@@ -103,7 +103,7 @@ namespace DataLock
         {
             //int index = Array.IndexOf(navTagList, tag);
             // Change the navbar selection
-            
+
             switch (tag)
             {
                 case "Home":
@@ -133,7 +133,9 @@ namespace DataLock
         {
             if (args.SelectedItemContainer != null)
             {
-                string tag = args.SelectedItemContainer.Tag.ToString();
+                if (args.IsSettingsSelected && contentFrame.CurrentSourcePageType == typeof(SettingPage)) return;
+                if (contentFrame.CurrentSourcePageType != null && pageToMenuItemMap.TryGetValue(contentFrame.CurrentSourcePageType, out var currentItem) && currentItem == args.SelectedItemContainer) return;
+                string tag = args.IsSettingsSelected ? "Settings" : args.SelectedItemContainer.Tag?.ToString();
                 int index = Array.IndexOf(navTagList, tag);
                 dynamic effect;
                 if (index > currentNavTag)

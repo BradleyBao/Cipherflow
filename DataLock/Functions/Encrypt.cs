@@ -5,13 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using System.Threading;
 
 namespace DataLock.Functions
 {
     public class Encrypt
     {
-        public static async Task<bool> AES_GCM_Encrypt(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> AES_GCM_Encrypt(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => AES_GCM_EncryptCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> AES_GCM_EncryptCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             // Create Random Key
             byte[] salt = RandomNumberGenerator.GetBytes(16); // 256 bits
             byte[] nonce = RandomNumberGenerator.GetBytes(12); // 96 bits
@@ -19,7 +27,7 @@ namespace DataLock.Functions
 
             // Read File
             byte[] key = DeriveKeyFromPassword(password, salt);
-            byte[] plaintext = await File.ReadAllBytesAsync(inputFilePath); 
+            byte[] plaintext = await File.ReadAllBytesAsync(inputFilePath, cancellationToken);
             byte[] ciphertext = new byte[plaintext.Length];
 
             try
@@ -29,13 +37,14 @@ namespace DataLock.Functions
                     aes.Encrypt(nonce, plaintext, ciphertext, tag);
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
                 using (var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
                 {
                     // Write Key, Nonce, Tag and Ciphertext to file
-                    fs.Write(salt, 0, salt.Length);
-                    fs.Write(nonce, 0, nonce.Length);
-                    fs.Write(tag, 0, tag.Length);
-                    fs.Write(ciphertext, 0, ciphertext.Length);
+                    await fs.WriteAsync(salt.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(nonce.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(tag.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(ciphertext.AsMemory(), cancellationToken);
                 }
             }
             catch (CryptographicException)
@@ -53,8 +62,15 @@ namespace DataLock.Functions
             return true;
         }
 
-        public static async Task<bool> AES_GCM_Encrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> AES_GCM_Encrypt_Stream(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => AES_GCM_Encrypt_StreamCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> AES_GCM_Encrypt_StreamCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             const int chunkSize = 1024 * 1024; // 1MB per chunk
 
             byte[] salt = RandomNumberGenerator.GetBytes(16); // for key derivation
@@ -66,12 +82,12 @@ namespace DataLock.Functions
                 using FileStream outputFs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
 
                 // 写入salt
-                await outputFs.WriteAsync(salt, 0, salt.Length);
+                await outputFs.WriteAsync(salt, 0, salt.Length, cancellationToken);
 
                 byte[] buffer = new byte[chunkSize];
                 int bytesRead;
 
-                while ((bytesRead = await inputFs.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = await inputFs.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                 {
                     byte[] nonce = RandomNumberGenerator.GetBytes(12);
                     byte[] tag = new byte[16];
@@ -85,12 +101,13 @@ namespace DataLock.Functions
 
                     // 写入每个块的信息：[4字节块长度][nonce][tag][ciphertext]
                     byte[] lengthBytes = BitConverter.GetBytes(ciphertext.Length);
-                    await outputFs.WriteAsync(lengthBytes, 0, 4);
-                    await outputFs.WriteAsync(nonce, 0, nonce.Length);
-                    await outputFs.WriteAsync(tag, 0, tag.Length);
-                    await outputFs.WriteAsync(ciphertext, 0, ciphertext.Length);
+                    await outputFs.WriteAsync(lengthBytes, 0, 4, cancellationToken);
+                    await outputFs.WriteAsync(nonce, 0, nonce.Length, cancellationToken);
+                    await outputFs.WriteAsync(tag, 0, tag.Length, cancellationToken);
+                    await outputFs.WriteAsync(ciphertext, 0, ciphertext.Length, cancellationToken);
                 }
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 Console.WriteLine($"Encryption failed: {ex.Message}");
@@ -129,12 +146,19 @@ namespace DataLock.Functions
             return key;
         }
 
-        public static async Task<bool> ChaCha20_Poly1305_Encrypt(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> ChaCha20_Poly1305_Encrypt(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => ChaCha20_Poly1305_EncryptCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> ChaCha20_Poly1305_EncryptCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             byte[] salt = RandomNumberGenerator.GetBytes(16); // Create 16 bits Salt
             byte[] nonce = RandomNumberGenerator.GetBytes(12); // 96 bits
             byte[] tag = new byte[16]; // 128 bits Tag
-            byte[] plaintext = await File.ReadAllBytesAsync(inputFilePath);
+            byte[] plaintext = await File.ReadAllBytesAsync(inputFilePath, cancellationToken);
             byte[] ciphertext = new byte[plaintext.Length];
             byte[] key = DeriveKeyFromPassword(password, salt);
 
@@ -145,13 +169,14 @@ namespace DataLock.Functions
                     chacha.Encrypt(nonce, plaintext, ciphertext, tag);
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
                 using (var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
                 {
                     // Write Key, Nonce, Tag and Ciphertext to file
-                    fs.Write(salt, 0, salt.Length);
-                    fs.Write(nonce, 0, nonce.Length);
-                    fs.Write(tag, 0, tag.Length);
-                    fs.Write(ciphertext, 0, ciphertext.Length);
+                    await fs.WriteAsync(salt.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(nonce.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(tag.AsMemory(), cancellationToken);
+                    await fs.WriteAsync(ciphertext.AsMemory(), cancellationToken);
                 }
             }
             catch (CryptographicException)
@@ -168,8 +193,15 @@ namespace DataLock.Functions
             return true;
         }
 
-        public static async Task<bool> ChaCha20_Poly1305_Encrypt_Stream(string inputFilePath, string outputFilePath, string password)
+        public static Task<bool> ChaCha20_Poly1305_Encrypt_Stream(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken = default)
         {
+            return OperationFiles.WriteAsync(inputFilePath, outputFilePath,
+                (staged, token) => ChaCha20_Poly1305_Encrypt_StreamCore(inputFilePath, staged, password, token), cancellationToken);
+        }
+
+        private static async Task<bool> ChaCha20_Poly1305_Encrypt_StreamCore(string inputFilePath, string outputFilePath, string password, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             byte[] salt = RandomNumberGenerator.GetBytes(16); // 盐值
             byte[] key = DeriveKeyFromPassword(password, salt);
 
@@ -181,11 +213,11 @@ namespace DataLock.Functions
                 using FileStream outputFs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
 
                 // 写入 Salt
-                await outputFs.WriteAsync(salt, 0, salt.Length);
+                await outputFs.WriteAsync(salt, 0, salt.Length, cancellationToken);
 
                 byte[] buffer = new byte[chunkSize];
                 int bytesRead;
-                while ((bytesRead = await inputFs.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = await inputFs.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                 {
                     byte[] nonce = RandomNumberGenerator.GetBytes(12); // 96位
                     byte[] tag = new byte[16]; // 128位认证标签
@@ -196,14 +228,15 @@ namespace DataLock.Functions
                     chacha.Encrypt(nonce, plaintext, ciphertext, tag);
 
                     // 写入：长度（4字节）+ Nonce + Tag + CipherText
-                    await outputFs.WriteAsync(BitConverter.GetBytes(ciphertext.Length));
-                    await outputFs.WriteAsync(nonce);
-                    await outputFs.WriteAsync(tag);
-                    await outputFs.WriteAsync(ciphertext);
+                    await outputFs.WriteAsync(BitConverter.GetBytes(ciphertext.Length).AsMemory(), cancellationToken);
+                    await outputFs.WriteAsync(nonce, cancellationToken);
+                    await outputFs.WriteAsync(tag, cancellationToken);
+                    await outputFs.WriteAsync(ciphertext, cancellationToken);
                 }
 
                 return true;
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 Console.WriteLine($"Encryption error: {ex.Message}");

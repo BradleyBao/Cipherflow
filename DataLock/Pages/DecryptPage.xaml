@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="DataLock.Pages.DecryptPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,8 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    xmlns:local="using:CommunityToolkit.WinUI.Controls" 
-    xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:local="using:CommunityToolkit.WinUI.Controls"
+    xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:modules="using:DataLock.Modules"
     Background="{ThemeResource DesktopAcrylicTransparentBrush}">
 
@@ -25,16 +25,16 @@
                 <TextBlock x:Uid="DecryptPage_Title" Style="{StaticResource TitleTextBlockStyle}">Decrypt</TextBlock>
                 <!--信息提示条-->
                 <InfoBar x:Name="DecryptInfoBar"
-                     IsOpen="False" 
+                     IsOpen="False"
                      Severity="Informational" />
 
                 <!-- Files dragging areas -->
-                <Border x:Name="UploadBanner" 
-                 BorderBrush="Gray" 
-                 BorderThickness="1" 
-                 Padding="30" 
-                 CornerRadius="8" 
-                 Background="{ThemeResource SolidBackgroundFillColorTransparent}" 
+                <Border x:Name="UploadBanner"
+                 BorderBrush="Gray"
+                 BorderThickness="1"
+                 Padding="30"
+                 CornerRadius="8"
+                 Background="{ThemeResource SolidBackgroundFillColorTransparent}"
                  HorizontalAlignment="Stretch"
                  AllowDrop="True"
                  Drop="UploadBanner_Drop"
@@ -44,16 +44,17 @@
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
                         <FontIcon Glyph="&#xE710;" FontSize="36" />
                         <TextBlock x:Uid="DecryptPage_Upload_Des" Text="Drag and drop to add files/folders" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" />
-                        <TextBlock x:Uid="DecryptPage_Upload_Des_Long" Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list." 
+                        <TextBlock x:Uid="DecryptPage_Upload_Des_Long" Text="Drag files from File Explorer or your desktop and drop them here to add files to the encryption list."
                         TextWrapping="Wrap" Width="300" HorizontalAlignment="Center" FontSize="12" Foreground="Gray" />
-                        <Button x:Name="DeBrowseAndAllFilesBtn" 
-                                x:Uid="DeBrowseAndAllFilesBtn_Btn" 
-                                HorizontalAlignment="Center" 
+                        <Button x:Name="DeBrowseAndAllFilesBtn"
+                                x:Uid="DeBrowseAndAllFilesBtn_Btn"
+                                HorizontalAlignment="Center"
                                 Click="DeBrowseAndAllFilesBtn_Click"
                                 Content="Browse and add files" />
                     </StackPanel>
                 </Border>
 
+                <ContentControl x:Name="OperationSettings" HorizontalContentAlignment="Stretch">
                 <StackPanel Spacing="4">
                     <local:SettingsExpander x:Name="decryptMethodSettingsCard"
                                             x:Uid="decryptMethodSettingsCardUid"
@@ -145,6 +146,7 @@
                  </StackPanel>
              </Expander>-->
                 </StackPanel>
+                </ContentControl>
 
 
                 <!-- 搜索与筛选 -->
@@ -162,14 +164,15 @@
                  <Span><Bold x:Name="NumofFilesRecord">0</Bold> <Span> Files on record</Span></Span>
                     </TextBlock>
 
-                    <Button HorizontalAlignment="Right" 
+                    <Button HorizontalAlignment="Right"
                             x:Name="DecryptRun"
-                            Style="{StaticResource AccentButtonStyle}" 
+                            Style="{StaticResource AccentButtonStyle}"
                             Content="Execute"
                             x:Uid="DecryptRun_Btn"
                             Click="DecryptRun_Click"/>
                 </Grid>
 
+                <Button x:Name="CancelOperation" x:Uid="CancelOperation" Content="Cancel" Click="CancelOperation_Click" Visibility="Collapsed" HorizontalAlignment="Right" />
                 <!--Progress Bar-->
                 <ProgressBar x:Name="DecryptProgress" Visibility="Collapsed" Width="Auto" Value="0" IsIndeterminate="False" ShowPaused="False" ShowError="False" />
 
@@ -185,19 +188,20 @@
                             <DataTemplate x:DataType="modules:DataType">
                                 <Border BorderBrush="Gray" BorderThickness="1"
                      Background="{ThemeResource CardBackgroundFillColorDefault}"
-                     Width="220" Height="160"
+                     Width="220" Height="200"
                      CornerRadius="8" Margin="8" Padding="12">
                                     <StackPanel Spacing="8">
-                                        <TextBlock Text="{x:Bind Name}" 
+                                        <Button x:Uid="RemoveSelectedFile" Content="Remove" Click="RemoveFile_Click" HorizontalAlignment="Right" Padding="6,2" />
+                                        <TextBlock Text="{x:Bind Name}"
                                 FontSize="16"
-                                FontWeight="Bold" 
+                                FontWeight="Bold"
                                 TextTrimming="CharacterEllipsis"/>
                                         <TextBlock Text="{x:Bind DataModifiled}"
                                  FontSize="12" />
-                                        <TextBlock Text="{x:Bind Path}" 
-                                FontSize="12" 
+                                        <TextBlock Text="{x:Bind Path}"
+                                FontSize="12"
                                 Foreground="Gray"
-                                TextTrimming="CharacterEllipsis" 
+                                TextTrimming="CharacterEllipsis"
                                 MaxLines="1"/>
 
                                         <FontIcon
